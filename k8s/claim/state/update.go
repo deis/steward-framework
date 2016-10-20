@@ -3,8 +3,8 @@ package state
 import (
 	"fmt"
 
-	"github.com/deis/steward/k8s"
-	"github.com/deis/steward/mode"
+	"github.com/deis/steward-framework"
+	"github.com/deis/steward-framework/k8s"
 )
 
 // Update represents the update to the state of a ServicePlanClaim
@@ -13,8 +13,8 @@ type Update interface {
 	Status() k8s.ServicePlanClaimStatus
 	Description() string
 	InstanceID() string
-	BindID() string
-	Extra() mode.JSONObject
+	BindingID() string
+	Extra() framework.JSONObject
 }
 
 // UpdateClaim updates claim in-place, according to update
@@ -31,8 +31,8 @@ func UpdateClaim(claim *k8s.ServicePlanClaim, update Update) {
 		if len(u.instanceID) > 0 {
 			claim.InstanceID = u.instanceID
 		}
-		if len(u.bindID) > 0 {
-			claim.BindID = u.bindID
+		if len(u.bindingID) > 0 {
+			claim.BindingID = u.bindingID
 		}
 		if len(u.extra) > 0 {
 			claim.Extra = u.extra

@@ -11,11 +11,6 @@ sudo: required
 install:
 - make bootstrap
 script:
-- make test-cover docker-build
-deploy:
-  provider: script
-  script: _scripts/deploy.sh
-  on:
-    branch: master
+- make test-cover
 after_success:
 - bash <(curl -s https://codecov.io/bash)

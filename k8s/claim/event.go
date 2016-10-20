@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/deis/steward/k8s"
-	"github.com/deis/steward/k8s/claim/state"
-	"github.com/deis/steward/mode"
+	"github.com/deis/steward-framework"
+	"github.com/deis/steward-framework/k8s"
+	"github.com/deis/steward-framework/k8s/claim/state"
 	"k8s.io/client-go/1.4/kubernetes/typed/core/v1"
 	v1types "k8s.io/client-go/1.4/pkg/api/v1"
 	"k8s.io/client-go/1.4/pkg/watch"
@@ -36,7 +36,7 @@ type nextFunc func(
 	*Event,
 	v1.SecretsGetter,
 	k8s.ServiceCatalogLookup,
-	*mode.Lifecycler,
+	framework.Lifecycler,
 	chan<- state.Update,
 )
 

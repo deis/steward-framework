@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/arschles/assert"
-	"github.com/deis/steward/mode"
+	"github.com/deis/steward-framework"
 	"github.com/pborman/uuid"
 )
 
@@ -20,12 +20,12 @@ func TestServiceCatalogLookupCatalogKey(t *testing.T) {
 func TestServiceCatalogLookupGetSet(t *testing.T) {
 	initial := []*ServiceCatalogEntry{
 		&ServiceCatalogEntry{
-			Info: mode.ServiceInfo{ID: "testsvc1"},
-			Plan: mode.ServicePlan{ID: "testplan1"},
+			Info: framework.ServiceInfo{ID: "testsvc1"},
+			Plan: framework.ServicePlan{ID: "testplan1"},
 		},
 		&ServiceCatalogEntry{
-			Info: mode.ServiceInfo{ID: "testsvc2"},
-			Plan: mode.ServicePlan{ID: "testplan2"},
+			Info: framework.ServiceInfo{ID: "testsvc2"},
+			Plan: framework.ServicePlan{ID: "testplan2"},
 		},
 	}
 	lookup := NewServiceCatalogLookup(initial)
@@ -38,8 +38,8 @@ func TestServiceCatalogLookupGetSet(t *testing.T) {
 		assert.Equal(t, fetched.Plan.ID, entry.Plan.ID, "plan ID")
 	}
 	newEntry := &ServiceCatalogEntry{
-		Info: mode.ServiceInfo{ID: "testsvc3"},
-		Plan: mode.ServicePlan{ID: "testplan3"},
+		Info: framework.ServiceInfo{ID: "testsvc3"},
+		Plan: framework.ServicePlan{ID: "testplan3"},
 	}
 	lookup.Set(newEntry)
 	fetched := lookup.Get(newEntry.Info.ID, newEntry.Plan.ID)

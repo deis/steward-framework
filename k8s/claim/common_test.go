@@ -1,15 +1,15 @@
 package claim
 
 import (
-	"github.com/deis/steward/k8s"
-	"github.com/juju/loggo"
+	"github.com/deis/steward-framework/k8s"
+	// "github.com/juju/loggo"
 	"github.com/pborman/uuid"
 	"k8s.io/client-go/1.4/pkg/api/v1"
 	"k8s.io/client-go/1.4/pkg/watch"
 )
 
 func init() {
-	logger.SetLogLevel(loggo.TRACE)
+	// logger.SetLogLevel(loggo.TRACE)
 }
 
 func getEvent(claim k8s.ServicePlanClaim) *Event {

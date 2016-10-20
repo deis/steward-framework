@@ -5,9 +5,9 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/deis/steward/k8s"
-	"github.com/deis/steward/k8s/claim/state"
-	"github.com/deis/steward/mode"
+	"github.com/deis/steward-framework"
+	"github.com/deis/steward-framework/k8s"
+	"github.com/deis/steward-framework/k8s/claim/state"
 	"github.com/pborman/uuid"
 	"k8s.io/client-go/1.4/kubernetes/typed/core/v1"
 	"k8s.io/client-go/1.4/pkg/api"
@@ -17,7 +17,7 @@ import (
 
 var (
 	errMissingInstanceID = errors.New("missing instance ID")
-	errMissingBindID     = errors.New("missing bind ID")
+	errMissingBindingID  = errors.New("missing bind ID")
 )
 
 type errNoSuchServiceAndPlan struct {
@@ -51,7 +51,7 @@ func processProvision(
 	evt *Event,
 	secretsNamespacer v1.SecretsGetter,
 	catalogLookup k8s.ServiceCatalogLookup,
-	lifecycler *mode.Lifecycler,
+	lifecycler framework.Lifecycler,
 	claimCh chan<- state.Update,
 ) {
 
@@ -76,13 +76,14 @@ func processProvision(
 	orgGUID := uuid.New()
 	spaceGUID := uuid.New()
 	instanceID := uuid.New()
-	provisionResp, err := lifecycler.Provision(instanceID, &mode.ProvisionRequest{
+	provisionResp, err := lifecycler.Provision(ctx, &framework.ProvisionRequest{
 		OrganizationGUID:  orgGUID,
+		InstanceID:        instanceID,
 		PlanID:            svc.Plan.ID,
 		ServiceID:         svc.Info.ID,
 		SpaceGUID:         spaceGUID,
 		AcceptsIncomplete: true,
-		Parameters:        mode.EmptyJSONObject(),
+		Parameters:        framework.EmptyJSONObject(),
 	})
 	if err != nil {
 		select {
@@ -101,13 +102,13 @@ func processProvision(
 			lifecycler,
 			claimCh,
 		)
-		if endState == mode.LastOperationStateFailed {
+		if endState == framework.LastOperationStateFailed {
 			failStatus := state.FullUpdate(
 				k8s.StatusFailed,
 				"failed polling for asynchrnous provision",
 				instanceID,
 				"",
-				mode.EmptyJSONObject(),
+				framework.EmptyJSONObject(),
 			)
 			select {
 			case claimCh <- failStatus:
@@ -128,7 +129,7 @@ func processBind(
 	evt *Event,
 	secretsNamespacer v1.SecretsGetter,
 	catalogLookup k8s.ServiceCatalogLookup,
-	lifecycler *mode.Lifecycler,
+	lifecycler framework.Lifecycler,
 	claimCh chan<- state.Update,
 ) {
 
@@ -159,11 +160,13 @@ func processBind(
 		return
 	}
 
-	bindID := uuid.New()
-	bindRes, err := lifecycler.Bind(instanceID, bindID, &mode.BindRequest{
+	bindingID := uuid.New()
+	bindRes, err := lifecycler.Bind(ctx, &framework.BindRequest{
+		InstanceID: instanceID,
 		ServiceID:  claim.ServiceID,
 		PlanID:     claim.PlanID,
-		Parameters: mode.JSONObject(map[string]interface{}{}),
+		BindingID:  bindingID,
+		Parameters: framework.JSONObject(map[string]interface{}{}),
 	})
 	if err != nil {
 		select {
@@ -195,7 +198,7 @@ func processBind(
 		return
 	}
 	select {
-	case claimCh <- state.FullUpdate(k8s.StatusBound, "", instanceID, bindID, mode.EmptyJSONObject()):
+	case claimCh <- state.FullUpdate(k8s.StatusBound, "", instanceID, bindingID, framework.EmptyJSONObject()):
 	case <-ctx.Done():
 		return
 	}
@@ -206,7 +209,7 @@ func processUnbind(
 	evt *Event,
 	secretsNamespacer v1.SecretsGetter,
 	catalogLookup k8s.ServiceCatalogLookup,
-	lifecycler *mode.Lifecycler,
+	lifecycler framework.Lifecycler,
 	claimCh chan<- state.Update,
 ) {
 
@@ -229,7 +232,7 @@ func processUnbind(
 	}
 
 	instanceID := claim.InstanceID
-	bindID := claim.BindID
+	bindingID := claim.BindingID
 	if instanceID == "" {
 		select {
 		case claimCh <- state.ErrUpdate(errMissingInstanceID):
@@ -237,17 +240,19 @@ func processUnbind(
 			return
 		}
 	}
-	if bindID == "" {
+	if bindingID == "" {
 		select {
-		case claimCh <- state.ErrUpdate(errMissingBindID):
+		case claimCh <- state.ErrUpdate(errMissingBindingID):
 		case <-ctx.Done():
 			return
 		}
 	}
 
-	if err := lifecycler.Unbind(instanceID, bindID, &mode.UnbindRequest{
-		ServiceID: claim.ServiceID,
-		PlanID:    claim.PlanID,
+	if err := lifecycler.Unbind(ctx, &framework.UnbindRequest{
+		InstanceID: instanceID,
+		ServiceID:  claim.ServiceID,
+		PlanID:     claim.PlanID,
+		BindingID:  bindingID,
 	}); err != nil {
 		select {
 		case claimCh <- state.ErrUpdate(err):
@@ -278,7 +283,7 @@ func processDeprovision(
 	evt *Event,
 	secretsNamespacer v1.SecretsGetter,
 	catalogLookup k8s.ServiceCatalogLookup,
-	lifecycler *mode.Lifecycler,
+	lifecycler framework.Lifecycler,
 	claimCh chan<- state.Update,
 ) {
 
@@ -309,13 +314,14 @@ func processDeprovision(
 	}
 
 	// deprovision
-	deprovisionReq := &mode.DeprovisionRequest{
+	deprovisionReq := &framework.DeprovisionRequest{
+		InstanceID:        instanceID,
 		ServiceID:         claim.ServiceID,
 		PlanID:            claim.PlanID,
 		AcceptsIncomplete: true,
 		Parameters:        evt.claim.Claim.Extra,
 	}
-	deprovisionResp, err := lifecycler.Deprovision(instanceID, deprovisionReq)
+	deprovisionResp, err := lifecycler.Deprovision(ctx, deprovisionReq)
 	if err != nil {
 		select {
 		case claimCh <- state.ErrUpdate(err):
@@ -333,13 +339,13 @@ func processDeprovision(
 			lifecycler,
 			claimCh,
 		)
-		if finalState == mode.LastOperationStateFailed {
+		if finalState == framework.LastOperationStateFailed {
 			failState := state.FullUpdate(
 				k8s.StatusFailed,
 				"polling async deprovision status failed",
 				instanceID,
 				"",
-				mode.EmptyJSONObject(),
+				framework.EmptyJSONObject(),
 			)
 			select {
 			case claimCh <- failState:
@@ -350,7 +356,7 @@ func processDeprovision(
 	}
 	claim.Status = k8s.StatusDeprovisioned.String()
 	select {
-	case claimCh <- state.FullUpdate(k8s.StatusDeprovisioned, "", instanceID, "", mode.EmptyJSONObject()):
+	case claimCh <- state.FullUpdate(k8s.StatusDeprovisioned, "", instanceID, "", framework.EmptyJSONObject()):
 	case <-ctx.Done():
 		return
 	}

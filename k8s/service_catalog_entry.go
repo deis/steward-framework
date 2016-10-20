@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/deis/steward/mode"
+	"github.com/deis/steward-framework"
 	"k8s.io/client-go/1.4/pkg/api"
 	"k8s.io/client-go/1.4/pkg/api/unversioned"
 )
@@ -18,17 +18,17 @@ const (
 type ServiceCatalogEntry struct {
 	unversioned.TypeMeta `json:",inline"`
 	api.ObjectMeta       `json:"metadata,omitempty"`
-	Info                 mode.ServiceInfo `json:"service_info"`
-	Plan                 mode.ServicePlan `json:"service_plan"`
-	Description          string           `json:"description"`
+	Info                 framework.ServiceInfo `json:"service_info"`
+	Plan                 framework.ServicePlan `json:"service_plan"`
+	Description          string                `json:"description"`
 }
 
 // NewServiceCatalogEntry creates a new ServiceCatalogEntry suitable for writing to the Kubernetes API
 func NewServiceCatalogEntry(
 	brokerName string,
 	objectMeta api.ObjectMeta,
-	info mode.ServiceInfo,
-	plan mode.ServicePlan) *ServiceCatalogEntry {
+	info framework.ServiceInfo,
+	plan framework.ServicePlan) *ServiceCatalogEntry {
 	typeMeta := unversioned.TypeMeta{
 		Kind:       ServiceCatalogEntryKind,
 		APIVersion: resourceAPIVersion(apiVersionV1),

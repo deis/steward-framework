@@ -1,7 +1,7 @@
 package state
 
 import (
-	"github.com/deis/steward/k8s"
+	"github.com/deis/steward-framework/k8s"
 	"k8s.io/client-go/1.4/pkg/watch"
 )
 

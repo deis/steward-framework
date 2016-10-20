@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 
-	"github.com/deis/steward/k8s"
-	"github.com/deis/steward/mode"
+	"github.com/deis/steward-framework/fake"
+	"github.com/deis/steward-framework/k8s"
 )
 
 func TestStartLoop(t *testing.T) {
@@ -18,7 +18,7 @@ func TestReceiveEvent(t *testing.T) {
 	iface := &FakeInteractor{}
 	secretsNamespacer := &k8s.FakeSecretsNamespacer{}
 	lookup := k8s.NewServiceCatalogLookup(nil) // TODO: add service/plan to the catalog
-	lifecycler := &mode.Lifecycler{}
+	lifecycler := &fake.Lifecycler{}
 	receiveEvent(ctx, evt, iface, secretsNamespacer, lookup, lifecycler)
 }
 

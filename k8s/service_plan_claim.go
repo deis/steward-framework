@@ -3,7 +3,7 @@ package k8s
 import (
 	"fmt"
 
-	"github.com/deis/steward/mode"
+	"github.com/deis/steward-framework"
 )
 
 const (
@@ -15,7 +15,7 @@ const (
 	statusDescriptionMapKey = "status-description"
 	targetNameMapKey        = "target-name"
 	instanceIDMapKey        = "instance-id"
-	bindIDMapKey            = "bind-id"
+	bindingIDMapKey         = "binding-id"
 	extraMapKey             = "extra"
 )
 
@@ -29,16 +29,16 @@ func (e errDataMapMissingKey) Error() string {
 
 // ServicePlanClaim is the json-encodable struct that represents a service plan claim. See https://github.com/deis/steward/blob/master/DATA_STRUCTURES.md#serviceplanclaim for more detail. This struct implements fmt.Stringer
 type ServicePlanClaim struct {
-	TargetName        string          `json:"target-name"`
-	ServiceID         string          `json:"service-id"`
-	PlanID            string          `json:"plan-id"`
-	ClaimID           string          `json:"claim-id"`
-	Action            string          `json:"action"`
-	Status            string          `json:"status"`
-	StatusDescription string          `json:"status-description"`
-	InstanceID        string          `json:"instance-id"`
-	BindID            string          `json:"bind-id"`
-	Extra             mode.JSONObject `json:"extra"`
+	TargetName        string               `json:"target-name"`
+	ServiceID         string               `json:"service-id"`
+	PlanID            string               `json:"plan-id"`
+	ClaimID           string               `json:"claim-id"`
+	Action            string               `json:"action"`
+	Status            string               `json:"status"`
+	StatusDescription string               `json:"status-description"`
+	InstanceID        string               `json:"instance-id"`
+	BindingID         string               `json:"binding-id"`
+	Extra             framework.JSONObject `json:"extra"`
 }
 
 // ServicePlanClaimFromMap attempts to convert m to a ServicePlanClaim. If the map was malformed or missing any keys, returns nil and an appropriate error
@@ -67,9 +67,9 @@ func ServicePlanClaimFromMap(m map[string]string) (*ServicePlanClaim, error) {
 	status := m[statusMapKey]
 	statusDescription := m[statusDescriptionMapKey]
 	instanceID := m[instanceIDMapKey]
-	bindID := m[bindIDMapKey]
+	bindingID := m[bindingIDMapKey]
 	extraStr := m[extraMapKey]
-	extra, err := mode.JSONObjectFromString(extraStr)
+	extra, err := framework.JSONObjectFromString(extraStr)
 	if err != nil {
 		return nil, err
 	}
@@ -83,7 +83,7 @@ func ServicePlanClaimFromMap(m map[string]string) (*ServicePlanClaim, error) {
 		Status:            status,
 		StatusDescription: statusDescription,
 		InstanceID:        instanceID,
-		BindID:            bindID,
+		BindingID:         bindingID,
 		Extra:             extra,
 	}, nil
 }
@@ -99,7 +99,7 @@ func (s ServicePlanClaim) ToMap() map[string]string {
 		statusMapKey:            s.Status,
 		statusDescriptionMapKey: s.StatusDescription,
 		instanceIDMapKey:        s.InstanceID,
-		bindIDMapKey:            s.BindID,
+		bindingIDMapKey:         s.BindingID,
 		extraMapKey:             s.Extra.EncodeToString(),
 	}
 }

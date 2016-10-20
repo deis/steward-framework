@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 
-	"github.com/deis/steward/k8s"
-	"github.com/deis/steward/k8s/claim/state"
-	"github.com/deis/steward/mode"
+	"github.com/deis/steward-framework"
+	"github.com/deis/steward-framework/k8s"
+	"github.com/deis/steward-framework/k8s/claim/state"
 	"k8s.io/client-go/1.4/kubernetes/typed/core/v1"
 	"k8s.io/client-go/1.4/pkg/api"
 	"k8s.io/client-go/1.4/pkg/labels"
@@ -32,7 +32,7 @@ func StartControlLoop(
 	iface Interactor,
 	secretsNamespacer v1.SecretsGetter,
 	lookup k8s.ServiceCatalogLookup,
-	lifecycler *mode.Lifecycler,
+	lifecycler framework.Lifecycler,
 ) error {
 
 	// start up the watcher so that events build up on the channel while we're listing events (which happens below)
@@ -74,7 +74,7 @@ func receiveEvent(
 	iface Interactor,
 	secretsNamespacer v1.SecretsGetter,
 	lookup k8s.ServiceCatalogLookup,
-	lifecycler *mode.Lifecycler,
+	lifecycler framework.Lifecycler,
 ) {
 	nextAction, err := evt.nextAction()
 	if isNoNextActionErr(err) {

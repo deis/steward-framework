@@ -1,4 +1,4 @@
-package: github.com/deis/steward
+package: github.com/deis/steward-framework
 ignore:
   - k8s.io/kubernetes
   - camlistore.org
@@ -24,15 +24,8 @@ ignore:
   - golang.org/x/sys
 import:
 - package: github.com/arschles/assert
-- package: github.com/kelseyhightower/envconfig
 - package: github.com/juju/loggo
 - package: github.com/gorilla/mux
-- package: github.com/arschles/testsrv
 - package: github.com/pborman/uuid
-- package: k8s.io/helm
-  version: v2.0.0-alpha.3
 - package: k8s.io/client-go/1.4
   version: 93fcd402979cfad8a7151f96e016416947c6a3cb
-- package: github.com/deis/k8s-claimer
-  version: v0.1.0
-- package: github.com/technosophos/moniker

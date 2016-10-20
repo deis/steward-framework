@@ -5,9 +5,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/deis/steward/k8s"
-	"github.com/deis/steward/k8s/claim/state"
-	"github.com/deis/steward/mode"
+	"github.com/deis/steward-framework"
+	"github.com/deis/steward-framework/k8s"
+	"github.com/deis/steward-framework/k8s/claim/state"
 )
 
 const (
@@ -22,33 +22,23 @@ func pollProvisionState(
 	planID,
 	operation,
 	instanceID string,
-	lastOpGetter mode.LastOperationGetter,
+	lastOpGetter framework.LastOperationGetter,
 	claimCh chan<- state.Update,
-) mode.LastOperationState {
+) framework.LastOperationState {
 
 	pollNum := 0
-	pollState := mode.LastOperationStateInProgress
+	pollState := framework.LastOperationStateInProgress
 	pollErrCount := 0
-
-	cfg, err := getConfig()
-	if err != nil {
-		select {
-		case claimCh <- state.ErrUpdate(err):
-		case <-ctx.Done():
-		}
-		return mode.LastOperationStateFailed
-	}
-	maxAsyncDuration := cfg.getMaxAsyncDuration()
 
 	startTime := time.Now()
 	for {
-		if pollState == mode.LastOperationStateSucceeded || pollState == mode.LastOperationStateFailed {
+		if pollState == framework.LastOperationStateSucceeded || pollState == framework.LastOperationStateFailed {
 			// if the polling went into success or failed state, just return that
 			return pollState
 		}
-		if pollState == mode.LastOperationStateGone {
+		if pollState == framework.LastOperationStateGone {
 			// When provisioning, treat "gone" as a failure
-			return mode.LastOperationStateFailed
+			return framework.LastOperationStateFailed
 		}
 
 		// If maxAsyncDuration has been exceeded
@@ -59,11 +49,11 @@ func pollProvisionState(
 				"asynchronous provisionining has exceeded the one hour allotted; service state is unknown",
 				instanceID,
 				"",
-				mode.EmptyJSONObject(),
+				framework.EmptyJSONObject(),
 			):
 			case <-ctx.Done():
 			}
-			return mode.LastOperationStateFailed
+			return framework.LastOperationStateFailed
 		}
 
 		// otherwise continue provisioning state
@@ -72,7 +62,7 @@ func pollProvisionState(
 			"polling for asynchronous provisionining",
 			instanceID,
 			"",
-			mode.JSONObject(map[string]interface{}{
+			framework.JSONObject(map[string]interface{}{
 				asyncProvisionRespOperationKey: operation,
 				asyncProvisionPollStateKey:     pollState.String(),
 				asyncProvisionPollCountKey:     strconv.Itoa(pollNum),
@@ -81,7 +71,12 @@ func pollProvisionState(
 		case claimCh <- update:
 		case <-ctx.Done():
 		}
-		resp, err := lastOpGetter.GetLastOperation(serviceID, planID, operation, instanceID)
+		resp, err := lastOpGetter.GetLastOperation(ctx, &framework.GetLastOperationRequest{
+			InstanceID: instanceID,
+			ServiceID:  serviceID,
+			PlanID:     planID,
+			Operation:  operation,
+		})
 		if err != nil {
 			if pollErrCount < 3 {
 				pollErrCount++
@@ -93,11 +88,11 @@ func pollProvisionState(
 					"polling for asynchronous provisionining has failed (repeatedly); service state is unknown",
 					instanceID,
 					"",
-					mode.EmptyJSONObject(),
+					framework.EmptyJSONObject(),
 				):
 				case <-ctx.Done():
 				}
-				return mode.LastOperationStateFailed
+				return framework.LastOperationStateFailed
 			}
 		} else {
 			// Reset error count to zero
@@ -110,7 +105,7 @@ func pollProvisionState(
 			case claimCh <- state.ErrUpdate(err):
 			case <-ctx.Done():
 			}
-			return mode.LastOperationStateFailed
+			return framework.LastOperationStateFailed
 		}
 		pollState = newState
 		time.Sleep(30 * time.Second)

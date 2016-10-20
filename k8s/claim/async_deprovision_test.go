@@ -7,10 +7,10 @@ import (
 	"time"
 
 	"github.com/arschles/assert"
-	"github.com/deis/steward/k8s"
-	"github.com/deis/steward/k8s/claim/state"
-	"github.com/deis/steward/mode"
-	"github.com/deis/steward/mode/fake"
+	"github.com/deis/steward-framework"
+	"github.com/deis/steward-framework/fake"
+	"github.com/deis/steward-framework/k8s"
+	"github.com/deis/steward-framework/k8s/claim/state"
 	"github.com/pborman/uuid"
 )
 
@@ -27,20 +27,28 @@ func TestPollDeprovisionState(t *testing.T) {
 	instanceID := uuid.New()
 
 	var curStateMut sync.RWMutex
-	curState := mode.LastOperationStateInProgress
+	curState := framework.LastOperationStateInProgress
 
 	lastOpGetter := &fake.LastOperationGetter{
-		Ret: func() *mode.GetLastOperationResponse {
+		Ret: func() *framework.GetLastOperationResponse {
 			curStateMut.RLock()
 			defer curStateMut.RUnlock()
-			return &mode.GetLastOperationResponse{State: curState.String()}
+			return &framework.GetLastOperationResponse{State: curState.String()}
 		},
 	}
 
 	claimCh := make(chan state.Update)
 	go func() {
-		finalState := pollDeprovisionState(ctx, serviceID, planID, operation, instanceID, lastOpGetter, claimCh)
-		assert.Equal(t, finalState, mode.LastOperationStateSucceeded, "final state")
+		finalState := pollDeprovisionState(
+			ctx,
+			serviceID,
+			planID,
+			operation,
+			instanceID,
+			lastOpGetter,
+			claimCh,
+		)
+		assert.Equal(t, finalState, framework.LastOperationStateSucceeded, "final state")
 	}()
 
 	/////
@@ -50,7 +58,7 @@ func TestPollDeprovisionState(t *testing.T) {
 	assert.NoErr(t, acceptStatus(claimCh, k8s.StatusDeprovisioningAsync))
 
 	curStateMut.Lock()
-	curState = mode.LastOperationStateSucceeded
+	curState = framework.LastOperationStateSucceeded
 	curStateMut.Unlock()
 
 	assert.NoErr(t, acceptStatus(claimCh, k8s.StatusDeprovisioningAsync))

@@ -3,7 +3,7 @@ package claim
 import (
 	"context"
 
-	"github.com/deis/steward/k8s"
+	"github.com/deis/steward-framework/k8s"
 	"k8s.io/client-go/1.4/kubernetes/typed/core/v1"
 	"k8s.io/client-go/1.4/pkg/api"
 	v1types "k8s.io/client-go/1.4/pkg/api/v1"

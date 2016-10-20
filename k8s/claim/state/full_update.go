@@ -3,36 +3,36 @@ package state
 import (
 	"fmt"
 
-	"github.com/deis/steward/k8s"
-	"github.com/deis/steward/mode"
+	"github.com/deis/steward-framework"
+	"github.com/deis/steward-framework/k8s"
 )
 
 type fullUpdate struct {
 	status      k8s.ServicePlanClaimStatus
 	description string
 	instanceID  string
-	bindID      string
-	extra       mode.JSONObject
+	bindingID   string
+	extra       framework.JSONObject
 }
 
 // FullUpdate returns an Update implementation with all fields filled in
-func FullUpdate(st k8s.ServicePlanClaimStatus, desc, instID, bindID string, extra mode.JSONObject) Update {
+func FullUpdate(st k8s.ServicePlanClaimStatus, desc, instID, bindingID string, extra framework.JSONObject) Update {
 	return fullUpdate{
 		status:      st,
 		description: desc,
 		instanceID:  instID,
-		bindID:      bindID,
+		bindingID:   bindingID,
 		extra:       extra,
 	}
 }
 
 func (f fullUpdate) String() string {
 	return fmt.Sprintf(
-		"full update. status = %s, description = '%s', instanceID = %s, bindID = %s, extra = %s",
+		"full update. status = %s, description = '%s', instanceID = %s, bindingID = %s, extra = %s",
 		f.status,
 		f.description,
 		f.instanceID,
-		f.bindID,
+		f.bindingID,
 		f.extra,
 	)
 }
@@ -48,9 +48,9 @@ func (f fullUpdate) Description() string {
 func (f fullUpdate) InstanceID() string {
 	return f.instanceID
 }
-func (f fullUpdate) BindID() string {
-	return f.bindID
+func (f fullUpdate) BindingID() string {
+	return f.bindingID
 }
-func (f fullUpdate) Extra() mode.JSONObject {
+func (f fullUpdate) Extra() framework.JSONObject {
 	return f.extra
 }

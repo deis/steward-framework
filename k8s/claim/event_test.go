@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/arschles/assert"
-	"github.com/deis/steward/k8s"
+	"github.com/deis/steward-framework/k8s"
 	"github.com/pborman/uuid"
 	"k8s.io/client-go/1.4/pkg/watch"
 )

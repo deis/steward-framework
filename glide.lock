@@ -1,53 +1,34 @@
-hash: e9ba438e8bb11efe217f78083f8a65c132c6fe6d39d240b834b4cd71fcd8da1d
-updated: 2016-09-29T19:23:39.387949515Z
+hash: 4a6ec233b148c7f48397236f8dff3d5290d81a1fbfc6c361fdecaba5d6793afc
+updated: 2016-10-25T18:10:39.868851001-04:00
 imports:
 - name: github.com/arschles/assert
-  version: fc2da9844984ce5093111298174706e14d4c0c47
-- name: github.com/arschles/testsrv
-  version: 1ca51fb1a3b6e612411883cf1c9dbc58319b1d5b
+  version: bb58b908265b5931732079df03f2818bf2167ba0
 - name: github.com/blang/semver
   version: 60ec3488bfea7cca02b021d106d9911120d25fe9
-- name: github.com/cloudfoundry-incubator/candiedyaml
-  version: 99c3df83b51532e3615f851d8c2dbb638f5313bf
 - name: github.com/davecgh/go-spew
   version: 6d212800a42e8ab5c146b8ace3490ee17e5225f9
   subpackages:
   - spew
-- name: github.com/deis/k8s-claimer
-  version: e6151d1ed5f290ab7b61c51be95b28c3657f26a4
-  subpackages:
-  - api
-  - client
-  - htp
-  - k8s
 - name: github.com/emicklei/go-restful
   version: 3d66f886316ac990eb502aaa89ea38546420b8b7
   subpackages:
   - log
   - swagger
 - name: github.com/ghodss/yaml
-  version: aa0c862057666179de291b67d9f093d12b5a8473
+  version: bea76d6a4713e18b7f5321a2b020738552def3ea
 - name: github.com/gogo/protobuf
-  version: 89f1976ff373a3e549675d2f212c10f98b6c6316
+  version: 91cc2497504ffbaba9656e7d988ccfe41c54f6a9
   subpackages:
   - proto
   - sortkeys
 - name: github.com/golang/glog
   version: 23def4e6c14b4da8ac2ed8007337bc5eb5007998
-- name: github.com/golang/protobuf
-  version: f0a097ddac24fb00e07d2ac17f8671423f3ea47c
-  subpackages:
-  - proto
-  - ptypes/any
-  - ptypes/timestamp
 - name: github.com/google/gofuzz
   version: fd52762d25a41827db7ef64c43756fd4b9f7e382
 - name: github.com/gorilla/context
   version: 08b5f424b9271eedf6f9f0ce86cb9396ed337a42
 - name: github.com/gorilla/mux
   version: 757bef944d0f21880861c2dd9c871ca543023cba
-- name: github.com/imdario/mergo
-  version: 50d4dbd4eb0e84778abe37cefef140271d96fade
 - name: github.com/juju/ansiterm
   version: b99631de12cf04a906c1d4e4ec54fb86eae5863d
   subpackages:
@@ -56,45 +37,32 @@ imports:
   version: 3b7ece48644d35850f4ced4c2cbc2cf8413f58e0
 - name: github.com/juju/ratelimit
   version: 77ed1c8a01217656d2080ad51981f6e99adaa177
-- name: github.com/kelseyhightower/envconfig
-  version: 13674b2d056fb658a00ba3f36e78043ced07c924
 - name: github.com/lunixbochs/vtclean
   version: 4fbf7632a2c6d3fbdb9931439bdbbeded02cbe36
 - name: github.com/mattn/go-colorable
-  version: 5da554b8d30ea210af19ee14a058919661bf0d04
+  version: 6c903ff4aa50920ca86087a280590b36b3152b9c
 - name: github.com/mattn/go-isatty
   version: 66b8e73f3f5cda9f96b69efd03dd3d7fc4a5cdb8
 - name: github.com/pborman/uuid
-  version: b984ec7fa9ff9e428bd0cf0abf429384dfbe3e37
+  version: 3d4f2ba23642d3cfd06bd4b54cf03d99d95c0f1b
 - name: github.com/spf13/pflag
-  version: 367864438f1b1a3c7db4da06a2f55b144e6784e0
-- name: github.com/technosophos/moniker
-  version: 9f956786b91d9786ca11aa5be6104542fa911546
+  version: 5ccb023bc27df288a957c5e994cd44fd19619465
 - name: github.com/ugorji/go
   version: faddd6128c66c4708f45fdc007f575f75e592a3c
   subpackages:
   - codec
 - name: golang.org/x/net
-  version: fb93926129b8ec0056f2f458b1f519654814edf0
+  version: 65dfc08770ce66f74becfdff5f8ab01caef4e946
   subpackages:
   - context
   - http2
   - http2/hpack
-  - internal/timeseries
-  - trace
-- name: google.golang.org/grpc
-  version: dec33edc378cf4971a2741cfd86ed70a644d6ba3
-  subpackages:
-  - codes
-  - credentials
-  - grpclog
-  - internal
-  - metadata
-  - naming
-  - peer
-  - transport
+  - idna
+  - lex/httplex
 - name: gopkg.in/inf.v0
   version: 3887ee99ecf07df5b447e9b00d9c0b2adaa9f3e4
+- name: gopkg.in/yaml.v2
+  version: a5b47d31c556af34a302ce5d659e6fea44d90de0
 - name: k8s.io/client-go
   version: 93fcd402979cfad8a7151f96e016416947c6a3cb
   subpackages:
@@ -164,7 +132,6 @@ imports:
   - 1.4/pkg/util/flowcontrol
   - 1.4/pkg/util/framer
   - 1.4/pkg/util/hash
-  - 1.4/pkg/util/homedir
   - 1.4/pkg/util/integer
   - 1.4/pkg/util/intstr
   - 1.4/pkg/util/json
@@ -184,19 +151,7 @@ imports:
   - 1.4/pkg/watch
   - 1.4/pkg/watch/versioned
   - 1.4/rest
-  - 1.4/tools/auth
-  - 1.4/tools/clientcmd
   - 1.4/tools/clientcmd/api
-  - 1.4/tools/clientcmd/api/latest
-  - 1.4/tools/clientcmd/api/v1
   - 1.4/tools/metrics
   - 1.4/transport
-- name: k8s.io/helm
-  version: 1119fdd54d9f810e0d09deefc3084f7743b26657
-  subpackages:
-  - pkg/chartutil
-  - pkg/ignore
-  - pkg/proto/hapi/chart
-  - pkg/proto/hapi/release
-  - pkg/proto/hapi/services
 testImports: []
