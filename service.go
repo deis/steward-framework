@@ -1,7 +1,7 @@
 package framework
 
-// Service is the representation of a steward service. It also is compatible with the CloudFoundry catalog API. See https://docs.cloudfoundry.org/services/api.html#catalog-mgmt for more detail
+// Service is the representation of a steward service.
 type Service struct {
 	ServiceInfo
-	Plans []ServicePlan `json:"plans"`
+	Plans []ServicePlan
 }

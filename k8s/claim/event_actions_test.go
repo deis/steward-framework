@@ -426,7 +426,7 @@ func TestDeprovisionInstanceIDFound(t *testing.T) {
 		assert.Equal(t, req.InstanceID, claim.InstanceID, "instance ID")
 		assert.Equal(t, req.ServiceID, claim.ServiceID, "service ID")
 		assert.Equal(t, req.PlanID, claim.PlanID, "plan ID")
-		assert.Equal(t, req.Parameters, claim.Extra, "extra")
+		assert.Equal(t, framework.JSONObject(req.Parameters), claim.Extra, "extra")
 	case <-time.After(waitDur):
 		t.Fatalf("didn't receive a claim update within %s", waitDur)
 	}

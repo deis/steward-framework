@@ -7,21 +7,33 @@ const (
 	TargetNameKey = "target_name"
 )
 
-// BindRequest represents a request to bind to a service. It is marked with JSON struct tags so that it can be encoded to, and decoded from the CloudFoundry binding request body format. See https://docs.cloudfoundry.org/services/api.html#binding for more details
+// BindRequest represents a request to bind to a service.
 type BindRequest struct {
-	InstanceID string     `json:"instance_id"`
-	ServiceID  string     `json:"service_id"`
-	PlanID     string     `json:"plan_id"`
-	BindingID  string     `json:"binding_id"`
-	Parameters JSONObject `json:"parameters"`
+	InstanceID string
+	ServiceID  string
+	PlanID     string
+	BindingID  string
+	Parameters map[string]interface{}
 }
 
 // TargetNamespace returns the target namespace in b.Parameters, or an error if it's missing
 func (b BindRequest) TargetNamespace() (string, error) {
-	return b.Parameters.String(TargetNamespaceKey)
+	return b.paramString(TargetNamespaceKey)
 }
 
 // TargetName returns the target name in b.Parameters, or an error if it's missing
 func (b BindRequest) TargetName() (string, error) {
-	return b.Parameters.String(TargetNameKey)
+	return b.paramString(TargetNameKey)
+}
+
+func (b BindRequest) paramString(key string) (string, error) {
+	i, ok := b.Parameters[key]
+	if !ok {
+		return "", errMissing
+	}
+	s, ok := i.(string)
+	if !ok {
+		return "", errNotAString{value: i}
+	}
+	return s, nil
 }

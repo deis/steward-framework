@@ -73,15 +73,11 @@ func processProvision(
 	case <-ctx.Done():
 		return
 	}
-	orgGUID := uuid.New()
-	spaceGUID := uuid.New()
 	instanceID := uuid.New()
 	provisionResp, err := lifecycler.Provision(ctx, &framework.ProvisionRequest{
-		OrganizationGUID:  orgGUID,
 		InstanceID:        instanceID,
 		PlanID:            svc.Plan.ID,
 		ServiceID:         svc.Info.ID,
-		SpaceGUID:         spaceGUID,
 		AcceptsIncomplete: true,
 		Parameters:        framework.EmptyJSONObject(),
 	})

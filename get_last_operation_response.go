@@ -34,7 +34,7 @@ const (
 
 // GetLastOperationResponse is the response body from a get last operation call
 type GetLastOperationResponse struct {
-	State string `json:"state"`
+	State string
 }
 
 // GetState returns the LastOperationState defined in g.State, or an error if g.State is not a valid LastOperationState
