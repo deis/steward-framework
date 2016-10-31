@@ -3,8 +3,8 @@ package state
 import (
 	"fmt"
 
-	"github.com/deis/steward-framework"
 	"github.com/deis/steward-framework/k8s"
+	"github.com/deis/steward-framework/lib"
 )
 
 type fullUpdate struct {
@@ -12,11 +12,11 @@ type fullUpdate struct {
 	description string
 	instanceID  string
 	bindingID   string
-	extra       framework.JSONObject
+	extra       lib.JSONObject
 }
 
 // FullUpdate returns an Update implementation with all fields filled in
-func FullUpdate(st k8s.ServicePlanClaimStatus, desc, instID, bindingID string, extra framework.JSONObject) Update {
+func FullUpdate(st k8s.ServicePlanClaimStatus, desc, instID, bindingID string, extra lib.JSONObject) Update {
 	return fullUpdate{
 		status:      st,
 		description: desc,
@@ -51,6 +51,6 @@ func (f fullUpdate) InstanceID() string {
 func (f fullUpdate) BindingID() string {
 	return f.bindingID
 }
-func (f fullUpdate) Extra() framework.JSONObject {
+func (f fullUpdate) Extra() lib.JSONObject {
 	return f.extra
 }

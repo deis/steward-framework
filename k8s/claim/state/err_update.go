@@ -3,8 +3,8 @@ package state
 import (
 	"fmt"
 
-	"github.com/deis/steward-framework"
 	"github.com/deis/steward-framework/k8s"
+	"github.com/deis/steward-framework/lib"
 )
 
 // ErrUpdate is an Update implementation that sets the claim to a failed state
@@ -35,6 +35,6 @@ func (e errUpdate) InstanceID() string {
 func (e errUpdate) BindingID() string {
 	return ""
 }
-func (e errUpdate) Extra() framework.JSONObject {
-	return framework.EmptyJSONObject()
+func (e errUpdate) Extra() lib.JSONObject {
+	return lib.EmptyJSONObject()
 }

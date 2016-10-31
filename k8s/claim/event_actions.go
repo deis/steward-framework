@@ -8,6 +8,7 @@ import (
 	"github.com/deis/steward-framework"
 	"github.com/deis/steward-framework/k8s"
 	"github.com/deis/steward-framework/k8s/claim/state"
+	"github.com/deis/steward-framework/lib"
 	"github.com/pborman/uuid"
 	"k8s.io/client-go/1.4/kubernetes/typed/core/v1"
 	"k8s.io/client-go/1.4/pkg/api"
@@ -79,7 +80,7 @@ func processProvision(
 		PlanID:            svc.Plan.ID,
 		ServiceID:         svc.Info.ID,
 		AcceptsIncomplete: true,
-		Parameters:        framework.EmptyJSONObject(),
+		Parameters:        lib.EmptyJSONObject(),
 	})
 	if err != nil {
 		select {
@@ -104,7 +105,7 @@ func processProvision(
 				"failed polling for asynchrnous provision",
 				instanceID,
 				"",
-				framework.EmptyJSONObject(),
+				lib.EmptyJSONObject(),
 			)
 			select {
 			case claimCh <- failStatus:
@@ -162,7 +163,7 @@ func processBind(
 		ServiceID:  claim.ServiceID,
 		PlanID:     claim.PlanID,
 		BindingID:  bindingID,
-		Parameters: framework.JSONObject(map[string]interface{}{}),
+		Parameters: lib.JSONObject(map[string]interface{}{}),
 	})
 	if err != nil {
 		select {
@@ -194,7 +195,7 @@ func processBind(
 		return
 	}
 	select {
-	case claimCh <- state.FullUpdate(k8s.StatusBound, "", instanceID, bindingID, framework.EmptyJSONObject()):
+	case claimCh <- state.FullUpdate(k8s.StatusBound, "", instanceID, bindingID, lib.EmptyJSONObject()):
 	case <-ctx.Done():
 		return
 	}
@@ -341,7 +342,7 @@ func processDeprovision(
 				"polling async deprovision status failed",
 				instanceID,
 				"",
-				framework.EmptyJSONObject(),
+				lib.EmptyJSONObject(),
 			)
 			select {
 			case claimCh <- failState:
@@ -352,7 +353,7 @@ func processDeprovision(
 	}
 	claim.Status = k8s.StatusDeprovisioned.String()
 	select {
-	case claimCh <- state.FullUpdate(k8s.StatusDeprovisioned, "", instanceID, "", framework.EmptyJSONObject()):
+	case claimCh <- state.FullUpdate(k8s.StatusDeprovisioned, "", instanceID, "", lib.EmptyJSONObject()):
 	case <-ctx.Done():
 		return
 	}

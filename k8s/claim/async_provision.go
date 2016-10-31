@@ -8,6 +8,7 @@ import (
 	"github.com/deis/steward-framework"
 	"github.com/deis/steward-framework/k8s"
 	"github.com/deis/steward-framework/k8s/claim/state"
+	"github.com/deis/steward-framework/lib"
 )
 
 const (
@@ -49,7 +50,7 @@ func pollProvisionState(
 				"asynchronous provisionining has exceeded the one hour allotted; service state is unknown",
 				instanceID,
 				"",
-				framework.EmptyJSONObject(),
+				lib.EmptyJSONObject(),
 			):
 			case <-ctx.Done():
 			}
@@ -62,7 +63,7 @@ func pollProvisionState(
 			"polling for asynchronous provisionining",
 			instanceID,
 			"",
-			framework.JSONObject(map[string]interface{}{
+			lib.JSONObject(map[string]interface{}{
 				asyncProvisionRespOperationKey: operation,
 				asyncProvisionPollStateKey:     pollState.String(),
 				asyncProvisionPollCountKey:     strconv.Itoa(pollNum),
@@ -88,7 +89,7 @@ func pollProvisionState(
 					"polling for asynchronous provisionining has failed (repeatedly); service state is unknown",
 					instanceID,
 					"",
-					framework.EmptyJSONObject(),
+					lib.EmptyJSONObject(),
 				):
 				case <-ctx.Done():
 				}

@@ -3,8 +3,8 @@ package state
 import (
 	"fmt"
 
-	"github.com/deis/steward-framework"
 	"github.com/deis/steward-framework/k8s"
+	"github.com/deis/steward-framework/lib"
 )
 
 type statusUpdate struct {
@@ -36,6 +36,6 @@ func (s statusUpdate) BindingID() string {
 	return ""
 }
 
-func (s statusUpdate) Extra() framework.JSONObject {
-	return framework.EmptyJSONObject()
+func (s statusUpdate) Extra() lib.JSONObject {
+	return lib.EmptyJSONObject()
 }

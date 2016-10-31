@@ -4,5 +4,5 @@ package framework
 type ProvisionResponse struct {
 	Operation string
 	IsAsync   bool
-	Extra     JSONObject
+	Extra     map[string]interface{}
 }

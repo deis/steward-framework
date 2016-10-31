@@ -3,8 +3,8 @@ package state
 import (
 	"fmt"
 
-	"github.com/deis/steward-framework"
 	"github.com/deis/steward-framework/k8s"
+	"github.com/deis/steward-framework/lib"
 )
 
 // Update represents the update to the state of a ServicePlanClaim
@@ -14,7 +14,7 @@ type Update interface {
 	Description() string
 	InstanceID() string
 	BindingID() string
-	Extra() framework.JSONObject
+	Extra() lib.JSONObject
 }
 
 // UpdateClaim updates claim in-place, according to update

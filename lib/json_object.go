@@ -1,26 +1,16 @@
-package framework
+package lib
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 )
 
 var (
-	errMissing      = errors.New("key is missing")
 	emptyJSONObject = JSONObject(map[string]interface{}{})
 )
 
 type errMalformedKV struct {
 	kv []string
-}
-
-type errNotAString struct {
-	value interface{}
-}
-
-func (e errNotAString) Error() string {
-	return fmt.Sprintf("value %v is not a string", e.value)
 }
 
 func (e errMalformedKV) Error() string {
@@ -35,17 +25,17 @@ func EmptyJSONObject() JSONObject {
 	return emptyJSONObject
 }
 
-func (j JSONObject) String(key string) (string, error) {
-	i, ok := j[key]
-	if !ok {
-		return "", errMissing
-	}
-	s, ok := i.(string)
-	if !ok {
-		return "", errNotAString{value: i}
-	}
-	return s, nil
-}
+// func (j JSONObject) String(key string) (string, error) {
+// 	i, ok := j[key]
+// 	if !ok {
+// 		return "", errMissing
+// 	}
+// 	s, ok := i.(string)
+// 	if !ok {
+// 		return "", errNotAString{value: i}
+// 	}
+// 	return s, nil
+// }
 
 // MarshalText is the encoding.TextMarshaler implementation
 func (j JSONObject) EncodeToString() string {

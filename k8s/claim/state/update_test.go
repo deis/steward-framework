@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	"github.com/arschles/assert"
-	"github.com/deis/steward-framework"
 	"github.com/deis/steward-framework/k8s"
+	"github.com/deis/steward-framework/lib"
 	"github.com/pborman/uuid"
 )
 
@@ -26,28 +26,28 @@ func TestUpdateClaim(t *testing.T) {
 				"some other description",
 				uuid.New(),
 				uuid.New(),
-				framework.JSONObject(map[string]interface{}{"a": "b"}),
+				lib.JSONObject(map[string]interface{}{"a": "b"}),
 			),
 		},
 		testCase{
 			claim: k8s.ServicePlanClaim{
 				Status:            k8s.StatusProvisioned.String(),
 				StatusDescription: "start",
-				Extra:             framework.JSONObject(map[string]interface{}{"a": "b"}),
+				Extra:             lib.JSONObject(map[string]interface{}{"a": "b"}),
 			},
 			update: FullUpdate(
 				k8s.StatusBinding,
 				"end",
 				uuid.New(),
 				uuid.New(),
-				framework.JSONObject(map[string]interface{}{"c": "d", "e": "f"}),
+				lib.JSONObject(map[string]interface{}{"c": "d", "e": "f"}),
 			),
 		},
 		testCase{
 			claim: k8s.ServicePlanClaim{
 				Status:            k8s.StatusProvisioned.String(),
 				StatusDescription: "something",
-				Extra:             framework.EmptyJSONObject(),
+				Extra:             lib.EmptyJSONObject(),
 			},
 			update: ErrUpdate(errors.New("error")),
 		},
@@ -55,7 +55,7 @@ func TestUpdateClaim(t *testing.T) {
 			claim: k8s.ServicePlanClaim{
 				Status:            k8s.StatusProvisioned.String(),
 				StatusDescription: "something else",
-				Extra:             framework.EmptyJSONObject(),
+				Extra:             lib.EmptyJSONObject(),
 			},
 			update: StatusUpdate(k8s.StatusBinding),
 		},

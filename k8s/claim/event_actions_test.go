@@ -12,6 +12,7 @@ import (
 	"github.com/deis/steward-framework/fake"
 	"github.com/deis/steward-framework/k8s"
 	"github.com/deis/steward-framework/k8s/claim/state"
+	"github.com/deis/steward-framework/lib"
 	"github.com/pborman/uuid"
 )
 
@@ -115,7 +116,7 @@ func TestProcessProvisionServiceFound(t *testing.T) {
 	defer cancelFn()
 	provisioner := &fake.Provisioner{
 		Resp: &framework.ProvisionResponse{
-			Extra: framework.JSONObject(map[string]interface{}{
+			Extra: lib.JSONObject(map[string]interface{}{
 				uuid.New(): uuid.New(),
 			}),
 		},
@@ -141,7 +142,7 @@ func TestProcessProvisionServiceFound(t *testing.T) {
 		assert.Equal(t, claimUpdate.Status(), k8s.StatusProvisioned, "new status")
 		assert.True(t, len(claimUpdate.InstanceID()) > 0, "no instance ID written")
 		assert.Equal(t, len(claimUpdate.BindingID()), 0, "bind ID written when it shouldn't have been")
-		assert.Equal(t, claimUpdate.Extra(), provisioner.Resp.Extra, "extra data")
+		assert.Equal(t, claimUpdate.Extra(), lib.JSONObject(provisioner.Resp.Extra), "extra data")
 		assert.Equal(t, len(provisioner.Reqs), 1, "number of provision calls")
 		assert.True(t, state.UpdateIsTerminal(claimUpdate), "provisioned update was not marked terminal")
 		req := provisioner.Reqs[0]
@@ -201,7 +202,7 @@ func TestProcessBindInstanceIDFound(t *testing.T) {
 	catalogLookup := getCatalogFromEvents(evt)
 	binder := &fake.Binder{
 		Res: &framework.BindResponse{
-			Creds: framework.JSONObject(map[string]interface{}{
+			Creds: lib.JSONObject(map[string]interface{}{
 				"cred1": uuid.New(),
 				"cred2": uuid.New(),
 			}),
@@ -389,7 +390,7 @@ func TestProcessDeprovisionServiceFound(t *testing.T) {
 func TestDeprovisionInstanceIDFound(t *testing.T) {
 	claim := getClaim(k8s.ActionDeprovision)
 	claim.InstanceID = uuid.New()
-	claim.Extra = framework.JSONObject(map[string]interface{}{
+	claim.Extra = lib.JSONObject(map[string]interface{}{
 		uuid.New(): uuid.New(),
 	})
 	evt := getEvent(claim)
@@ -426,7 +427,7 @@ func TestDeprovisionInstanceIDFound(t *testing.T) {
 		assert.Equal(t, req.InstanceID, claim.InstanceID, "instance ID")
 		assert.Equal(t, req.ServiceID, claim.ServiceID, "service ID")
 		assert.Equal(t, req.PlanID, claim.PlanID, "plan ID")
-		assert.Equal(t, framework.JSONObject(req.Parameters), claim.Extra, "extra")
+		assert.Equal(t, lib.JSONObject(req.Parameters), claim.Extra, "extra")
 	case <-time.After(waitDur):
 		t.Fatalf("didn't receive a claim update within %s", waitDur)
 	}

@@ -6,5 +6,5 @@ type ProvisionRequest struct {
 	PlanID            string
 	ServiceID         string
 	AcceptsIncomplete bool
-	Parameters        JSONObject
+	Parameters        map[string]interface{}
 }
