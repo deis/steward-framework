@@ -1,6 +1,6 @@
 package framework
 
-// DeprovisionRequest represents a request to do a service deprovision operation.
+// DeprovisionRequest represents a request to deprovision a service instance.
 type DeprovisionRequest struct {
 	InstanceID        string
 	ServiceID         string

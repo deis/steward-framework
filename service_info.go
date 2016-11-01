@@ -1,6 +1,6 @@
 package framework
 
-// ServiceInfo represents all of the information about a service except for its plans
+// ServiceInfo represents all ascpects of a requestable service, except for its ServicePlans.
 type ServiceInfo struct {
 	Name          string
 	ID            string

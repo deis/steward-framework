@@ -1,6 +1,6 @@
 package framework
 
-// ServicePlan is the steward representation of a service plan.
+// ServicePlan represents a specific configuration or variant of its parent Service.
 type ServicePlan struct {
 	ID          string
 	Name        string

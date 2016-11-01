@@ -1,6 +1,6 @@
 package framework
 
-// Service is the representation of a steward service.
+// Service represents a requestable service.
 type Service struct {
 	ServiceInfo
 	Plans []ServicePlan

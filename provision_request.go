@@ -1,6 +1,6 @@
 package framework
 
-// ProvisionRequest represents a request to do a service provision operation.
+// ProvisionRequest represents a request to provision a service instance.
 type ProvisionRequest struct {
 	InstanceID        string
 	PlanID            string

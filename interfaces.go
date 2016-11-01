@@ -4,32 +4,38 @@ import (
 	"context"
 )
 
-// Cataloger lists all the available services
+// Cataloger lists all the available services.
 type Cataloger interface {
+	// List lists all the available services.
 	List(ctx context.Context) ([]*Service, error)
 }
 
-// Provisioner provisions services
+// Provisioner provisions services instances.
 type Provisioner interface {
+	// Provision provisions a service instance.
 	Provision(ctx context.Context, req *ProvisionRequest) (*ProvisionResponse, error)
 }
 
-// Binder binds services to apps
+// Binder obtains valid credentials (and other connection details) for service instances.
 type Binder interface {
+	// Bind obtains valid credentials (and other connection details) for a service instance.
 	Bind(ctx context.Context, req *BindRequest) (*BindResponse, error)
 }
 
-// Unbinder unbinds services from apps
+// Unbinder invalidates credentials for service instances.
 type Unbinder interface {
+	// Unbind invalidates the specified credentials.
 	Unbind(ctx context.Context, req *UnbindRequest) error
 }
 
-// Deprovisioner deprovisions services
+// Deprovisioner deprovisions service instances.
 type Deprovisioner interface {
+	// Deprovision deprovisions a service instance.
 	Deprovision(ctx context.Context, req *DeprovisionRequest) (*DeprovisionResponse, error)
 }
 
-// LastOperationGetter fetches the last operation performed after an async provision or deprovision response
+// LastOperationGetter fetches the status of an asynchronous operation that is pending completion.
 type LastOperationGetter interface {
+	// GetLastOperation fetches the status of an asynchronous operation that is pending completion.
 	GetLastOperation(ctx context.Context, req *GetLastOperationRequest) (*GetLastOperationResponse, error)
 }

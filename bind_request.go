@@ -1,6 +1,6 @@
 package framework
 
-// BindRequest represents a request to bind to a service.
+// BindRequest represents a request to bind to a service instance.
 type BindRequest struct {
 	InstanceID string
 	ServiceID  string
