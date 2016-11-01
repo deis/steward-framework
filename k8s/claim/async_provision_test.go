@@ -31,7 +31,7 @@ func TestPollProvisionState(t *testing.T) {
 	curState := framework.LastOperationStateInProgress
 
 	lastOpGetter := &fake.LastOperationGetter{
-		Ret: func() *framework.GetLastOperationResponse {
+		Res: func() *framework.GetLastOperationResponse {
 			curStateMut.RLock()
 			defer curStateMut.RUnlock()
 			return &framework.GetLastOperationResponse{State: curState.String()}

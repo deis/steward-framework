@@ -6,15 +6,15 @@ import (
 	"github.com/deis/steward-framework"
 )
 
-// Binder is a fake (github.com/deis/steward-framework).Binder implementation, suitable for use in
-// unit tests
+// Binder is a fake implementation of the (github.com/deis/steward-framework).Binder interface
+// that is suitable for use in unit tests.
 type Binder struct {
 	Reqs []*framework.BindRequest
 	Res  *framework.BindResponse
 }
 
-// Bind is the Binder interface implementation. It constructs a new BindCall from the function
-// params, then returns b.Res, nil. This function is not concurrency safe
+// Bind is the Binder interface implementation. It just records the BindRequest and returns a
+// hardcoded BindResponse.
 func (b *Binder) Bind(
 	ctx context.Context,
 	req *framework.BindRequest,

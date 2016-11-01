@@ -115,7 +115,7 @@ func TestProcessProvisionServiceFound(t *testing.T) {
 	cancelCtx, cancelFn := context.WithCancel(ctx)
 	defer cancelFn()
 	provisioner := &fake.Provisioner{
-		Resp: &framework.ProvisionResponse{
+		Res: &framework.ProvisionResponse{
 			Extra: lib.JSONObject(map[string]interface{}{
 				uuid.New(): uuid.New(),
 			}),
@@ -142,7 +142,7 @@ func TestProcessProvisionServiceFound(t *testing.T) {
 		assert.Equal(t, claimUpdate.Status(), k8s.StatusProvisioned, "new status")
 		assert.True(t, len(claimUpdate.InstanceID()) > 0, "no instance ID written")
 		assert.Equal(t, len(claimUpdate.BindingID()), 0, "bind ID written when it shouldn't have been")
-		assert.Equal(t, claimUpdate.Extra(), lib.JSONObject(provisioner.Resp.Extra), "extra data")
+		assert.Equal(t, claimUpdate.Extra(), lib.JSONObject(provisioner.Res.Extra), "extra data")
 		assert.Equal(t, len(provisioner.Reqs), 1, "number of provision calls")
 		assert.True(t, state.UpdateIsTerminal(claimUpdate), "provisioned update was not marked terminal")
 		req := provisioner.Reqs[0]
@@ -399,7 +399,7 @@ func TestDeprovisionInstanceIDFound(t *testing.T) {
 	cancelCtx, cancelFn := context.WithCancel(ctx)
 	defer cancelFn()
 	deprovisioner := &fake.Deprovisioner{
-		Resp: &framework.DeprovisionResponse{Operation: "testop"},
+		Res: &framework.DeprovisionResponse{Operation: "testop"},
 	}
 	lifecycler := &fake.Lifecycler{
 		Deprovisioner: deprovisioner,
