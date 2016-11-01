@@ -25,18 +25,6 @@ func EmptyJSONObject() JSONObject {
 	return emptyJSONObject
 }
 
-// func (j JSONObject) String(key string) (string, error) {
-// 	i, ok := j[key]
-// 	if !ok {
-// 		return "", errMissing
-// 	}
-// 	s, ok := i.(string)
-// 	if !ok {
-// 		return "", errNotAString{value: i}
-// 	}
-// 	return s, nil
-// }
-
 // MarshalText is the encoding.TextMarshaler implementation
 func (j JSONObject) EncodeToString() string {
 	slc := make([]string, len(j))
