@@ -16,7 +16,7 @@ The framework implements all of the following concerns:
 
 Utilizing the Steward Framework to implement your own service catalog controller requires the following steps:
 
-1. Include the `github.com/deis/steward/framework` package in your project using your dependency management system of choice-- for example, [glide](https://github.com/masterminds/glide) or [godeps](https://github.com/tools/godep).
+1. Include the `github.com/deis/steward-framework` package in your project using your dependency management system of choice-- for example, [glide](https://github.com/masterminds/glide) or [godeps](https://github.com/tools/godep).
 
 2. Implement the `framework.Cataloger` and `framework.Lifecycler interfaces`. For your convenience, those interfaces are shown below:
 

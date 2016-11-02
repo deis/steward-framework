@@ -15,7 +15,8 @@ type k8sRestClientImpl struct {
 	cl *rest.RESTClient
 }
 
-// NewK8sServiceCatalogInteractor creates a new ServiceCatalogInteractor which uses the Kubernetes API (using cl) to implement its functionality
+// NewK8sServiceCatalogInteractor creates a new ServiceCatalogInteractor which uses the Kubernetes
+// API (using cl) to implement its functionality
 func NewK8sServiceCatalogInteractor(cl *rest.RESTClient) ServiceCatalogInteractor {
 	return k8sRestClientImpl{cl: cl}
 }

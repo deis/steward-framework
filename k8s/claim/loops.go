@@ -11,9 +11,13 @@ import (
 
 var maxAsyncDuration = time.Hour
 
-// StartControlLoops calls StartControlLoop for each namespace in namespaces. For each call to StartControlLoop, it calls evtNamespacer.Events(ns) to create a new ConfigMapInterface. Because each StartControlLoop call is done in a new goroutine, this function need not be called in its own goroutine.
+// StartControlLoops calls StartControlLoop for each namespace in namespaces. For each call to
+// StartControlLoop, it calls evtNamespacer.Events(ns) to create a new ConfigMapInterface. Because
+// each StartControlLoop call is done in a new goroutine, this function need not be called in its
+// own goroutine.
 //
-// In order to stop all loops, pass a cancellable context to this function and call its cancel function
+// In order to stop all loops, pass a cancellable context to this function and call its cancel
+// function
 func StartControlLoops(
 	ctx context.Context,
 	evtNamespacer InteractorNamespacer,

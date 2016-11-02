@@ -26,7 +26,9 @@ var (
 	errWatchClosed = errors.New("watch closed")
 )
 
-// StartControlLoop starts an infinite loop that receives on watcher.ResultChan() and takes action on each change in service plan claims. It's intended to be called in a goroutine. Call watcher.Stop() to stop this loop
+// StartControlLoop starts an infinite loop that receives on watcher.ResultChan() and takes action
+// on each change in service plan claims. It's intended to be called in a goroutine. Call
+// watcher.Stop() to stop this loop
 func StartControlLoop(
 	ctx context.Context,
 	iface Interactor,
@@ -35,7 +37,8 @@ func StartControlLoop(
 	lifecycler framework.Lifecycler,
 ) error {
 
-	// start up the watcher so that events build up on the channel while we're listing events (which happens below)
+	// start up the watcher so that events build up on the channel while we're listing events
+	// (which happens below)
 	cancelCtx, cancelFn := context.WithCancel(ctx)
 	watcher := iface.Watch(cancelCtx, api.ListOptions{LabelSelector: claimLabelSelector})
 	ch := watcher.ResultChan()
@@ -55,7 +58,8 @@ func StartControlLoop(
 	for {
 		select {
 		case evt, open := <-ch:
-			// if the watch channel was closed, fail. this if statement is this is semantically equivalent to if evt == nil {...}
+			// if the watch channel was closed, fail. this if statement is this is semantically
+			// equivalent to if evt == nil {...}
 			if !open {
 				return errWatchClosed
 			}

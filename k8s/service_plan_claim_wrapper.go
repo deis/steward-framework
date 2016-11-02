@@ -6,13 +6,15 @@ import (
 	"k8s.io/client-go/1.4/pkg/api/v1"
 )
 
-// ServicePlanClaimWrapper is a wrapper for a ServicePlanClaim that also contains kubernetes-specific information
+// ServicePlanClaimWrapper is a wrapper for a ServicePlanClaim that also contains
+// kubernetes-specific information
 type ServicePlanClaimWrapper struct {
 	ObjectMeta v1.ObjectMeta
 	Claim      *ServicePlanClaim
 }
 
-// ServicePlanClaimWrapperFromConfigMap parses a ServicePlanClaim from cm and returns the wrapper representation of it. Returns nil and an error if the config map was malformed
+// ServicePlanClaimWrapperFromConfigMap parses a ServicePlanClaim from cm and returns the wrapper
+// representation of it. Returns nil and an error if the config map was malformed
 func ServicePlanClaimWrapperFromConfigMap(cm *v1.ConfigMap) (*ServicePlanClaimWrapper, error) {
 	claim, err := ServicePlanClaimFromMap(cm.Data)
 	if err != nil {
@@ -42,7 +44,8 @@ func (spc ServicePlanClaimWrapper) ToConfigMap() *v1.ConfigMap {
 	}
 }
 
-// ServicePlanClaimsListWrapper is a wrapper for a list of ServicePlanClaims that also contains kubernetes-specific information.
+// ServicePlanClaimsListWrapper is a wrapper for a list of ServicePlanClaims that also contains
+// kubernetes-specific information.
 type ServicePlanClaimsListWrapper struct {
 	Claims          []*ServicePlanClaimWrapper
 	ResourceVersion string

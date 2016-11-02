@@ -27,7 +27,7 @@ func (e errDataMapMissingKey) Error() string {
 	return fmt.Sprintf("map to convert to service plan claim is missing key %s", e.key)
 }
 
-// ServicePlanClaim is the json-encodable struct that represents a service plan claim. See https://github.com/deis/steward/blob/master/DATA_STRUCTURES.md#serviceplanclaim for more detail. This struct implements fmt.Stringer
+// ServicePlanClaim is the json-encodable struct that represents a service plan claim.
 type ServicePlanClaim struct {
 	TargetName        string         `json:"target-name"`
 	ServiceID         string         `json:"service-id"`
@@ -41,7 +41,8 @@ type ServicePlanClaim struct {
 	Extra             lib.JSONObject `json:"extra"`
 }
 
-// ServicePlanClaimFromMap attempts to convert m to a ServicePlanClaim. If the map was malformed or missing any keys, returns nil and an appropriate error
+// ServicePlanClaimFromMap attempts to convert m to a ServicePlanClaim. If the map was malformed or
+// missing any keys, returns nil and an appropriate error
 func ServicePlanClaimFromMap(m map[string]string) (*ServicePlanClaim, error) {
 	targetName, ok := m[targetNameMapKey]
 	if !ok {
@@ -63,7 +64,8 @@ func ServicePlanClaimFromMap(m map[string]string) (*ServicePlanClaim, error) {
 	if !ok {
 		return nil, errDataMapMissingKey{key: actionMapKey}
 	}
-	// the following fields may be empty when the application submits them, so don't error if they're missing
+	// the following fields may be empty when the application submits them, so don't error if they're
+	// missing
 	status := m[statusMapKey]
 	statusDescription := m[statusDescriptionMapKey]
 	instanceID := m[instanceIDMapKey]

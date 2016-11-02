@@ -3,7 +3,8 @@ package k8s
 const (
 	// StatusProvisioning is the status indicating that the provisioning process has started
 	StatusProvisioning ServicePlanClaimStatus = "provisioning"
-	// StatusProvisioningAsync is the status indicating that the provisioning process has started but is in the process of polling for an asynchronous provision
+	// StatusProvisioningAsync is the status indicating that the provisioning process has started but
+	// is in the process of polling for an asynchronous provision
 	StatusProvisioningAsync ServicePlanClaimStatus = "provisioning-async"
 	// StatusProvisioned is the status indicating that the provisioning process has succeeded
 	StatusProvisioned ServicePlanClaimStatus = "provisioned"
@@ -17,11 +18,14 @@ const (
 	StatusUnbound ServicePlanClaimStatus = "unbound"
 	// StatusDeprovisioning is the status indicating that the deprovisioning process has started
 	StatusDeprovisioning ServicePlanClaimStatus = "deprovisioning"
-	// StatusDeprovisioningAsync is the status indicating the the deprovisioning process has started but is in the process of polling for an asynchronous deprovision
+	// StatusDeprovisioningAsync is the status indicating the the deprovisioning process has started
+	// but is in the process of polling for an asynchronous deprovision
 	StatusDeprovisioningAsync ServicePlanClaimStatus = "deprovisioning-async"
 	// StatusDeprovisioned is the status indicating that the deprovisioning process has succeeded
 	StatusDeprovisioned ServicePlanClaimStatus = "deprovisioned"
-	// StatusFailed is the status indicating that a service's creation or deletion operation has failed for some reason. The human-readable explanation of the failure will be written to the status description
+	// StatusFailed is the status indicating that a service's creation or deletion operation has
+	// failed for some reason. The human-readable explanation of the failure will be written to the
+	// status description
 	StatusFailed ServicePlanClaimStatus = "failed"
 )
 

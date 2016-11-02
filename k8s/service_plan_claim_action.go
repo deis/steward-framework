@@ -9,13 +9,16 @@ const (
 	ActionUnbind ServicePlanClaimAction = "unbind"
 	// ActionDeprovision is the action indicating that a service should be deprovisioned
 	ActionDeprovision ServicePlanClaimAction = "deprovision"
-	// ActionCreate is the action indicating that a service should be provisioned and bound, in that order, in the same operation
+	// ActionCreate is the action indicating that a service should be provisioned and bound, in that
+	// order, in the same operation
 	ActionCreate ServicePlanClaimAction = "create"
-	// ActionDelete is the actions indicating that a service should be unbound and deprovisioned, in that order in the same operation
+	// ActionDelete is the actions indicating that a service should be unbound and deprovisioned, in
+	// that order in the same operation
 	ActionDelete ServicePlanClaimAction = "delete"
 )
 
-// ServicePlanClaimAction is the type representing the current action a consumer has requested on a claim. It implements fmt.Stringer
+// ServicePlanClaimAction is the type representing the current action a consumer has requested on a
+// claim. It implements fmt.Stringer
 type ServicePlanClaimAction string
 
 // StringIsServicePlanClaimAction returns true if s == a.String()

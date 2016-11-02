@@ -17,7 +17,7 @@ type configMapWatcher struct {
 	ifaceFn func() (watch.Interface, error)
 }
 
-// NewWatcher returns a watcher that uses watchIface to get and return events
+// newConfigMapWatcher returns a Watcher that uses watchIface to get and return events
 func newConfigMapWatcher(ctx context.Context, ifaceFn func() (watch.Interface, error)) Watcher {
 	return &configMapWatcher{
 		ctx:     ctx,
@@ -25,7 +25,8 @@ func newConfigMapWatcher(ctx context.Context, ifaceFn func() (watch.Interface, e
 	}
 }
 
-// receives on iface.ResultChan() until either that channel or closeCh was closed. returned errWatchClosed in the former case, errStopped in the latter
+// watchLoop receives on iface.ResultChan() until either that channel or closeCh is closed.
+// It returns errWatchClosed in the former case, errStopped in the latter
 func watchLoop(ctx context.Context, iface watch.Interface, retCh chan<- *Event) error {
 	defer iface.Stop()
 	resCh := iface.ResultChan()
@@ -52,7 +53,9 @@ func watchLoop(ctx context.Context, iface watch.Interface, retCh chan<- *Event) 
 	}
 }
 
-// ResultChan is the (k8s.io/kubernetes/pkg/watch).Interface interface implementation. It returns a channel that will be closed either when Stop() is called, or when the server severs the connection, which may happen intermittently.
+// ResultChan is the (k8s.io/kubernetes/pkg/watch).Interface interface implementation. It returns
+// a channel that will be closed either when Stop() is called, or when the server severs the
+// connection, which may happen intermittently.
 func (c *configMapWatcher) ResultChan() <-chan *Event {
 	retCh := make(chan *Event)
 	go func() {

@@ -1,6 +1,8 @@
 package k8s
 
-// FakeServiceCatalogInteractor is a fake ServiceCatalogInteractor implementation, for use in unit tests
+// FakeServiceCatalogInteractor is a fake implementation of the
+// (github.com/deis/steward-framework/k8s).ServiceCatalogInteractor interface that is suitable for
+// use in unit tests
 type FakeServiceCatalogInteractor struct {
 	ListRet   *ServiceCatalogEntryList
 	Created   []*ServiceCatalogEntry
@@ -12,7 +14,8 @@ func (f FakeServiceCatalogInteractor) List() (*ServiceCatalogEntryList, error) {
 	return f.ListRet, nil
 }
 
-// Create is the ServiceCatalogInteractor interface implementation. It appends entry to f.Created and returns entry, nil if f.CreateErr is nil. Otherwise, returns nil, f.CreateErr
+// Create is the ServiceCatalogInteractor interface implementation. It appends entry to f.Created
+// and returns entry, nil if f.CreateErr is nil. Otherwise, returns nil, f.CreateErr
 func (f *FakeServiceCatalogInteractor) Create(entry *ServiceCatalogEntry) (*ServiceCatalogEntry, error) {
 	f.Created = append(f.Created, entry)
 	if f.CreateErr != nil {

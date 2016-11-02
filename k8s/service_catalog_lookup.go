@@ -4,12 +4,14 @@ import (
 	"fmt"
 )
 
-// ServiceCatalogLookup is an an O(1) lookup table for service catalog entries, based on ServiceCatalogEntry names. None of the functions on this struct are thread-safe
+// ServiceCatalogLookup is an an O(1) lookup table for service catalog entries, based on
+// ServiceCatalogEntry names. None of the functions on this struct are thread-safe
 type ServiceCatalogLookup struct {
 	lookup map[string]*ServiceCatalogEntry
 }
 
-// NewServiceCatalogLookup creates a new ServiceCatalogLookup, with its internal lookup table filled with all items in catalog.Items
+// NewServiceCatalogLookup creates a new ServiceCatalogLookup, with its internal lookup table
+// filled with all items in catalog.Items
 func NewServiceCatalogLookup(catalog []*ServiceCatalogEntry) ServiceCatalogLookup {
 	set := map[string]*ServiceCatalogEntry{}
 	for _, item := range catalog {
@@ -18,7 +20,8 @@ func NewServiceCatalogLookup(catalog []*ServiceCatalogEntry) ServiceCatalogLooku
 	return ServiceCatalogLookup{lookup: set}
 }
 
-// FetchServiceCatalogLookup returns a new ServiceCatalogLookup from the Kubernetes cluster using cl. Returns a non-nil error if there was a problem communicating with the cluster
+// FetchServiceCatalogLookup returns a new ServiceCatalogLookup from the Kubernetes cluster using
+// cl. Returns a non-nil error if there was a problem communicating with the cluster
 func FetchServiceCatalogLookup(iface ServiceCatalogInteractor) (*ServiceCatalogLookup, error) {
 	ret := NewServiceCatalogLookup(nil)
 	entries, err := iface.List()

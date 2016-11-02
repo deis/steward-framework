@@ -10,11 +10,13 @@ import (
 )
 
 const (
-	// ServiceCatalogEntryKind is the Kubernetes kind that should be used when creating/updating service catalog entries
+	// ServiceCatalogEntryKind is the Kubernetes kind that should be used when creating/updating
+	// service catalog entries
 	ServiceCatalogEntryKind = "ServiceCatalogEntry"
 )
 
-// ServiceCatalogEntry is the third party resource that represents a single service provider + plan. A new ServiceCatalogEntry should be created with NewServiceCatalogEntry
+// ServiceCatalogEntry is the third party resource that represents a single service provider +
+// plan. A new ServiceCatalogEntry should be created with NewServiceCatalogEntry
 type ServiceCatalogEntry struct {
 	unversioned.TypeMeta `json:",inline"`
 	api.ObjectMeta       `json:"metadata,omitempty"`
@@ -23,7 +25,8 @@ type ServiceCatalogEntry struct {
 	Description          string                `json:"description"`
 }
 
-// NewServiceCatalogEntry creates a new ServiceCatalogEntry suitable for writing to the Kubernetes API
+// NewServiceCatalogEntry creates a new ServiceCatalogEntry suitable for writing to the Kubernetes
+// API
 func NewServiceCatalogEntry(
 	brokerName string,
 	objectMeta api.ObjectMeta,

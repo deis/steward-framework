@@ -7,12 +7,13 @@ import (
 	"github.com/deis/steward-framework/lib"
 )
 
-// ErrUpdate is an Update implementation that sets the claim to a failed state
+// errUpdate is an Update implementation that sets the claim to a failed state
 type errUpdate struct {
 	err error
 }
 
-// ErrUpdate returns a new Update implementation that has a failed status and status description equal to e.Error()
+// ErrUpdate returns a new Update implementation that has a failed status and status description
+// equal to e.Error()
 func ErrUpdate(e error) Update {
 	return errUpdate{err: e}
 }
