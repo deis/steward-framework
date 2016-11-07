@@ -23,23 +23,23 @@ func pollProvisionState(
 	planID,
 	operation,
 	instanceID string,
-	lastOpGetter framework.LastOperationGetter,
+	opStatusRetriever framework.OperationStatusRetriever,
 	claimCh chan<- state.Update,
-) framework.LastOperationState {
+) framework.OperationState {
 
 	pollNum := 0
-	pollState := framework.LastOperationStateInProgress
+	pollState := framework.OperationStateInProgress
 	pollErrCount := 0
 
 	startTime := time.Now()
 	for {
-		if pollState == framework.LastOperationStateSucceeded || pollState == framework.LastOperationStateFailed {
+		if pollState == framework.OperationStateSucceeded || pollState == framework.OperationStateFailed {
 			// if the polling went into success or failed state, just return that
 			return pollState
 		}
-		if pollState == framework.LastOperationStateGone {
+		if pollState == framework.OperationStateGone {
 			// When provisioning, treat "gone" as a failure
-			return framework.LastOperationStateFailed
+			return framework.OperationStateFailed
 		}
 
 		// If maxAsyncDuration has been exceeded
@@ -54,7 +54,7 @@ func pollProvisionState(
 			):
 			case <-ctx.Done():
 			}
-			return framework.LastOperationStateFailed
+			return framework.OperationStateFailed
 		}
 
 		// otherwise continue provisioning state
@@ -72,7 +72,7 @@ func pollProvisionState(
 		case claimCh <- update:
 		case <-ctx.Done():
 		}
-		resp, err := lastOpGetter.GetLastOperation(ctx, &framework.GetLastOperationRequest{
+		resp, err := opStatusRetriever.GetOperationStatus(ctx, &framework.OperationStatusRequest{
 			InstanceID: instanceID,
 			ServiceID:  serviceID,
 			PlanID:     planID,
@@ -93,7 +93,7 @@ func pollProvisionState(
 				):
 				case <-ctx.Done():
 				}
-				return framework.LastOperationStateFailed
+				return framework.OperationStateFailed
 			}
 		} else {
 			// Reset error count to zero
@@ -106,7 +106,7 @@ func pollProvisionState(
 			case claimCh <- state.ErrUpdate(err):
 			case <-ctx.Done():
 			}
-			return framework.LastOperationStateFailed
+			return framework.OperationStateFailed
 		}
 		pollState = newState
 		time.Sleep(30 * time.Second)

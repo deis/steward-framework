@@ -7,5 +7,5 @@ type Lifecycler interface {
 	Deprovisioner
 	Binder
 	Unbinder
-	LastOperationGetter
+	OperationStatusRetriever
 }

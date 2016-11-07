@@ -99,7 +99,7 @@ func processProvision(
 			lifecycler,
 			claimCh,
 		)
-		if endState == framework.LastOperationStateFailed {
+		if endState == framework.OperationStateFailed {
 			failStatus := state.FullUpdate(
 				k8s.StatusFailed,
 				"failed polling for asynchrnous provision",
@@ -336,7 +336,7 @@ func processDeprovision(
 			lifecycler,
 			claimCh,
 		)
-		if finalState == framework.LastOperationStateFailed {
+		if finalState == framework.OperationStateFailed {
 			failState := state.FullUpdate(
 				k8s.StatusFailed,
 				"polling async deprovision status failed",

@@ -28,13 +28,13 @@ func TestPollProvisionState(t *testing.T) {
 	instanceID := uuid.New()
 
 	var curStateMut sync.RWMutex
-	curState := framework.LastOperationStateInProgress
+	curState := framework.OperationStateInProgress
 
-	lastOpGetter := &fake.LastOperationGetter{
-		Res: func() *framework.GetLastOperationResponse {
+	opStatusRetriever := &fake.OperationStatusRetriever{
+		Res: func() *framework.OperationStatusResponse {
 			curStateMut.RLock()
 			defer curStateMut.RUnlock()
-			return &framework.GetLastOperationResponse{State: curState.String()}
+			return &framework.OperationStatusResponse{State: curState.String()}
 		},
 	}
 
@@ -46,20 +46,24 @@ func TestPollProvisionState(t *testing.T) {
 			planID,
 			operation,
 			instanceID,
-			lastOpGetter,
+			opStatusRetriever,
 			claimCh,
 		)
-		assert.Equal(t, finalState, framework.LastOperationStateSucceeded, "final state")
+		assert.Equal(t, finalState, framework.OperationStateSucceeded, "final state")
 	}()
 
 	/////
-	// expect a provisioning-async first. after we receive it, the last op getter will get another provisioning-async and wait to send it. we then change the current state, receive the second provisioning-async and then expect the channel to not receive anymore. the final success state is received in the return value of pollProvisionState, and it's checked in the above goroutine
+	// expect a provisioning-async first. after we receive it, the op status retriever will get
+	// another provisioning-async and wait to send it. we then change the current state, receive the
+	// second provisioning-async and then expect the channel to not receive anymore. the final
+	// success state is received in the return value of pollProvisionState, and it's checked in the
+	// above goroutine
 	/////
 
 	assert.NoErr(t, acceptStatus(claimCh, k8s.StatusProvisioningAsync))
 
 	curStateMut.Lock()
-	curState = framework.LastOperationStateSucceeded
+	curState = framework.OperationStateSucceeded
 	curStateMut.Unlock()
 
 	assert.NoErr(t, acceptStatus(claimCh, k8s.StatusProvisioningAsync))

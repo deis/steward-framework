@@ -49,10 +49,10 @@ Utilizing the Steward Framework to implement your own service catalog controller
         req *framework.DeprovisionRequest,
       ) (*framework.DeprovisionResponse, error)
 
-      GetLastOperation(
+      GetOperationStatus(
         ctx context.Context,
-        req *framework.GetLastOperationRequest,
-      ) (*framework.GetLastOperationResponse, error)
+        req *framework.OperationStatusRequest,
+      ) (*framework.OperationStatusResponse, error)
 
     }
 

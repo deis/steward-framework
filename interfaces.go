@@ -34,8 +34,8 @@ type Deprovisioner interface {
 	Deprovision(ctx context.Context, req *DeprovisionRequest) (*DeprovisionResponse, error)
 }
 
-// LastOperationGetter fetches the status of an asynchronous operation that is pending completion.
-type LastOperationGetter interface {
-	// GetLastOperation fetches the status of an asynchronous operation that is pending completion.
-	GetLastOperation(ctx context.Context, req *GetLastOperationRequest) (*GetLastOperationResponse, error)
+// OperationStatusRetriever fetches the status of an asynchronous operation that is pending completion.
+type OperationStatusRetriever interface {
+	// GetOperationStatus fetches the status of an asynchronous operation that is pending completion.
+	GetOperationStatus(ctx context.Context, req *OperationStatusRequest) (*OperationStatusResponse, error)
 }
