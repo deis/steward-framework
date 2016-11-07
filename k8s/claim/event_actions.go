@@ -10,10 +10,9 @@ import (
 	"github.com/deis/steward-framework/k8s/claim/state"
 	"github.com/deis/steward-framework/lib"
 	"github.com/pborman/uuid"
-	"k8s.io/client-go/1.4/kubernetes/typed/core/v1"
-	"k8s.io/client-go/1.4/pkg/api"
-	"k8s.io/client-go/1.4/pkg/api/unversioned"
-	v1types "k8s.io/client-go/1.4/pkg/api/v1"
+	"k8s.io/client-go/kubernetes/typed/core/v1"
+	"k8s.io/client-go/pkg/api/unversioned"
+	v1types "k8s.io/client-go/pkg/api/v1"
 )
 
 var (
@@ -260,7 +259,7 @@ func processUnbind(
 
 	// delete secret
 	secretsIface := secretsNamespacer.Secrets(claimWrapper.ObjectMeta.Namespace)
-	if err := secretsIface.Delete(claim.TargetName, &api.DeleteOptions{}); err != nil {
+	if err := secretsIface.Delete(claim.TargetName, &v1types.DeleteOptions{}); err != nil {
 		select {
 		case claimCh <- state.ErrUpdate(err):
 		case <-ctx.Done():

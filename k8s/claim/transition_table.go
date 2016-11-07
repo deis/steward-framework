@@ -3,7 +3,7 @@ package claim
 import (
 	"github.com/deis/steward-framework/k8s"
 	"github.com/deis/steward-framework/k8s/claim/state"
-	"k8s.io/client-go/1.4/pkg/watch"
+	"k8s.io/client-go/pkg/watch"
 )
 
 var (

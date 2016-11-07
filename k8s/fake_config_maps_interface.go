@@ -1,13 +1,13 @@
 package k8s
 
 import (
-	"k8s.io/client-go/1.4/pkg/api"
-	"k8s.io/client-go/1.4/pkg/api/v1"
-	"k8s.io/client-go/1.4/pkg/watch"
+	"k8s.io/client-go/pkg/api"
+	"k8s.io/client-go/pkg/api/v1"
+	"k8s.io/client-go/pkg/watch"
 )
 
 // FakeConfigMapsInterface is a fake implementation of
-// (k8s.io/client-go/1.4/kubernetes/typed/core/v1).ConfigMapInterface that is suitable for use
+// (k8s.io/client-go/kubernetes/typed/core/v1).ConfigMapInterface that is suitable for use
 // in unit tests
 type FakeConfigMapsInterface struct {
 	Created    []*v1.ConfigMap
@@ -31,7 +31,7 @@ func (f *FakeConfigMapsInterface) Get(name string) (*v1.ConfigMap, error) {
 
 // List is the ConfigMap interface implementation. It currently is not implemented and returns
 // nil, nil
-func (f *FakeConfigMapsInterface) List(opts api.ListOptions) (*v1.ConfigMapList, error) {
+func (f *FakeConfigMapsInterface) List(opts v1.ListOptions) (*v1.ConfigMapList, error) {
 	return nil, nil
 }
 
@@ -44,13 +44,13 @@ func (f *FakeConfigMapsInterface) Create(cm *v1.ConfigMap) (*v1.ConfigMap, error
 
 // Delete is the ConfigMapInterface interface implementation. It currently is not implemented and
 // returns nil.
-func (f *FakeConfigMapsInterface) Delete(string, *api.DeleteOptions) error {
+func (f *FakeConfigMapsInterface) Delete(string, *v1.DeleteOptions) error {
 	return nil
 }
 
 // DeleteCollection is the ConfigMapInterface interface implementation. It current is not
 // implemented and returns nil
-func (f *FakeConfigMapsInterface) DeleteCollection(*api.DeleteOptions, api.ListOptions) error {
+func (f *FakeConfigMapsInterface) DeleteCollection(*v1.DeleteOptions, v1.ListOptions) error {
 	return nil
 }
 
@@ -68,6 +68,6 @@ func (f *FakeConfigMapsInterface) Patch(string, api.PatchType, []byte, ...string
 
 // Watch is the ConfigMapsInterface interface implementation. It currently is not implemented and
 // returns nil, nil.
-func (f *FakeConfigMapsInterface) Watch(api.ListOptions) (watch.Interface, error) {
+func (f *FakeConfigMapsInterface) Watch(v1.ListOptions) (watch.Interface, error) {
 	return nil, nil
 }

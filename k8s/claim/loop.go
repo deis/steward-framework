@@ -7,10 +7,10 @@ import (
 	"github.com/deis/steward-framework"
 	"github.com/deis/steward-framework/k8s"
 	"github.com/deis/steward-framework/k8s/claim/state"
-	"k8s.io/client-go/1.4/kubernetes/typed/core/v1"
-	"k8s.io/client-go/1.4/pkg/api"
-	"k8s.io/client-go/1.4/pkg/labels"
-	"k8s.io/client-go/1.4/pkg/watch"
+	"k8s.io/client-go/kubernetes/typed/core/v1"
+	v1types "k8s.io/client-go/pkg/api/v1"
+	"k8s.io/client-go/pkg/labels"
+	"k8s.io/client-go/pkg/watch"
 )
 
 const (
@@ -40,12 +40,12 @@ func StartControlLoop(
 	// start up the watcher so that events build up on the channel while we're listing events
 	// (which happens below)
 	cancelCtx, cancelFn := context.WithCancel(ctx)
-	watcher := iface.Watch(cancelCtx, api.ListOptions{LabelSelector: claimLabelSelector})
+	watcher := iface.Watch(cancelCtx, v1types.ListOptions{LabelSelector: claimLabelSelector.String()})
 	ch := watcher.ResultChan()
 	defer cancelFn()
 
 	// iterate through all existing claims before streaming them
-	claimList, err := iface.List(api.ListOptions{LabelSelector: claimLabelSelector})
+	claimList, err := iface.List(v1types.ListOptions{LabelSelector: claimLabelSelector.String()})
 	if err != nil {
 		return err
 	}

@@ -1,7 +1,7 @@
 package k8s
 
 import (
-	"k8s.io/client-go/1.4/kubernetes/typed/core/v1"
+	"k8s.io/client-go/kubernetes/typed/core/v1"
 )
 
 // FakeSecretsNamespacer is a fake implementation of the

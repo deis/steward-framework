@@ -7,9 +7,9 @@ import (
 	"github.com/deis/steward-framework"
 	"github.com/deis/steward-framework/k8s"
 	"github.com/deis/steward-framework/k8s/claim/state"
-	"k8s.io/client-go/1.4/kubernetes/typed/core/v1"
-	v1types "k8s.io/client-go/1.4/pkg/api/v1"
-	"k8s.io/client-go/1.4/pkg/watch"
+	"k8s.io/client-go/kubernetes/typed/core/v1"
+	v1types "k8s.io/client-go/pkg/api/v1"
+	"k8s.io/client-go/pkg/watch"
 )
 
 type errNoNextAction struct {

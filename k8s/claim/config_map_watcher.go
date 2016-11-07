@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	"k8s.io/client-go/1.4/pkg/watch"
+	"k8s.io/client-go/pkg/watch"
 )
 
 var (

@@ -4,10 +4,9 @@ import (
 	"context"
 
 	"github.com/deis/steward-framework/k8s"
-	"k8s.io/client-go/1.4/kubernetes/typed/core/v1"
-	"k8s.io/client-go/1.4/pkg/api"
-	v1types "k8s.io/client-go/1.4/pkg/api/v1"
-	"k8s.io/client-go/1.4/pkg/watch"
+	"k8s.io/client-go/kubernetes/typed/core/v1"
+	v1types "k8s.io/client-go/pkg/api/v1"
+	"k8s.io/client-go/pkg/watch"
 )
 
 type cmInterface struct {
@@ -22,7 +21,7 @@ func (c cmInterface) Get(name string) (*k8s.ServicePlanClaimWrapper, error) {
 	return k8s.ServicePlanClaimWrapperFromConfigMap(cm)
 }
 
-func (c cmInterface) List(opts api.ListOptions) (*k8s.ServicePlanClaimsListWrapper, error) {
+func (c cmInterface) List(opts v1types.ListOptions) (*k8s.ServicePlanClaimsListWrapper, error) {
 	cms, err := c.cm.List(opts)
 	if err != nil {
 		return nil, err
@@ -54,7 +53,7 @@ func (c cmInterface) Update(spc *k8s.ServicePlanClaimWrapper) (*k8s.ServicePlanC
 	return k8s.ServicePlanClaimWrapperFromConfigMap(newCM)
 }
 
-func (c cmInterface) Watch(ctx context.Context, opts api.ListOptions) Watcher {
+func (c cmInterface) Watch(ctx context.Context, opts v1types.ListOptions) Watcher {
 	return newConfigMapWatcher(ctx, func() (watch.Interface, error) {
 		return c.cm.Watch(opts)
 	})

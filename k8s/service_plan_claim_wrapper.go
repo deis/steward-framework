@@ -3,7 +3,7 @@ package k8s
 import (
 	"fmt"
 
-	"k8s.io/client-go/1.4/pkg/api/v1"
+	"k8s.io/client-go/pkg/api/v1"
 )
 
 // ServicePlanClaimWrapper is a wrapper for a ServicePlanClaim that also contains

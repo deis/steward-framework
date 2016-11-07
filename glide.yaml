@@ -1,6 +1,5 @@
 package: github.com/deis/steward-framework
 ignore:
-  - k8s.io/kubernetes
   - camlistore.org
   - code.google.com
   - github.com/docker/docker
@@ -27,5 +26,4 @@ import:
 - package: github.com/juju/loggo
 - package: github.com/gorilla/mux
 - package: github.com/pborman/uuid
-- package: k8s.io/client-go/1.4
-  version: 93fcd402979cfad8a7151f96e016416947c6a3cb
+- package: k8s.io/client-go

@@ -5,8 +5,8 @@ import (
 	"strings"
 
 	"github.com/deis/steward-framework"
-	"k8s.io/client-go/1.4/pkg/api"
-	"k8s.io/client-go/1.4/pkg/api/unversioned"
+	"k8s.io/client-go/pkg/api"
+	"k8s.io/client-go/pkg/api/unversioned"
 )
 
 const (

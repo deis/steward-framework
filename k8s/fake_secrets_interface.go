@@ -1,13 +1,13 @@
 package k8s
 
 import (
-	"k8s.io/client-go/1.4/pkg/api"
-	"k8s.io/client-go/1.4/pkg/api/v1"
-	"k8s.io/client-go/1.4/pkg/watch"
+	"k8s.io/client-go/pkg/api"
+	"k8s.io/client-go/pkg/api/v1"
+	"k8s.io/client-go/pkg/watch"
 )
 
 // FakeSecretsInterface is a fake implementation of
-// (k8s.io/client-go/1.4/kubernetes/typed/core/v1).SecretInterface that is suitable for use in
+// (k8s.io/client-go/kubernetes/typed/core/v1).SecretInterface that is suitable for use in
 // unit tests
 type FakeSecretsInterface struct {
 	Created []*v1.Secret
@@ -22,7 +22,7 @@ func (f *FakeSecretsInterface) Get(string) (*v1.Secret, error) {
 
 // List is the SecretInterface interface implementation. It currently is not implemented and
 // returns nil, nil
-func (f *FakeSecretsInterface) List(opts api.ListOptions) (*v1.SecretList, error) {
+func (f *FakeSecretsInterface) List(opts v1.ListOptions) (*v1.SecretList, error) {
 	return nil, nil
 }
 
@@ -35,14 +35,14 @@ func (f *FakeSecretsInterface) Create(secret *v1.Secret) (*v1.Secret, error) {
 
 // Delete is the SecretInterface interface implementation. It appends name to f.Deleted and returns
 // nil. This function is not concurrency-safe
-func (f *FakeSecretsInterface) Delete(name string, opts *api.DeleteOptions) error {
+func (f *FakeSecretsInterface) Delete(name string, opts *v1.DeleteOptions) error {
 	f.Deleted = append(f.Deleted, name)
 	return nil
 }
 
 // DeleteCollection is the SecretInterface interface implementation. It currently is not
 // implemented and returns nil
-func (f *FakeSecretsInterface) DeleteCollection(*api.DeleteOptions, api.ListOptions) error {
+func (f *FakeSecretsInterface) DeleteCollection(*v1.DeleteOptions, v1.ListOptions) error {
 	return nil
 }
 
@@ -60,6 +60,6 @@ func (f FakeSecretsInterface) Patch(string, api.PatchType, []byte, ...string) (*
 
 // Watch is the (k8s.io/kubernetes/pkg/client/unversioned).Secretsnterface interface
 // implementation. It currently is not implemented and returns nil, nil
-func (f *FakeSecretsInterface) Watch(api.ListOptions) (watch.Interface, error) {
+func (f *FakeSecretsInterface) Watch(v1.ListOptions) (watch.Interface, error) {
 	return nil, nil
 }
