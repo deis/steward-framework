@@ -1,5 +1,5 @@
-hash: fffbe4e5440086238fb536a66227be9de0880e9abe107d5ac6abfa919660cb75
-updated: 2016-11-07T13:39:42.489089641-05:00
+hash: 95f4f92054131b0e95f824162d8e4c86d448e1d77972db329c11b41884db0031
+updated: 2016-11-08T13:37:31.820783935-05:00
 imports:
 - name: github.com/arschles/assert
   version: bb58b908265b5931732079df03f2818bf2167ba0
@@ -23,6 +23,13 @@ imports:
   version: 5215b55f46b2b919f50a1df0eaa5886afe4e3b3d
   subpackages:
   - spew
+- name: github.com/deis/k8s-claimer
+  version: 4399e29a210f60233575a83a3b8a9a2d9db71f23
+  subpackages:
+  - api
+  - client
+  - htp
+  - k8s
 - name: github.com/emicklei/go-restful
   version: 89ef8af493ab468a45a42bb0d89a06fccdd2fb22
   subpackages:
@@ -55,14 +62,20 @@ imports:
   version: 08b5f424b9271eedf6f9f0ce86cb9396ed337a42
 - name: github.com/gorilla/mux
   version: 757bef944d0f21880861c2dd9c871ca543023cba
+- name: github.com/howeyc/gopass
+  version: 3ca23474a7c7203e0a0a070fd33508f6efdb9b3d
+- name: github.com/imdario/mergo
+  version: 6633656539c1639d9d78127b7d47c622b5d7b6dc
 - name: github.com/jonboulle/clockwork
   version: 72f9bd7c4e0c2a40055ab3d0f09654f730cce982
 - name: github.com/juju/ansiterm
-  version: b99631de12cf04a906c1d4e4ec54fb86eae5863d
+  version: 35c59b9e0fe275705a71bf5d58ee293f27efbbc4
   subpackages:
   - tabwriter
 - name: github.com/juju/loggo
   version: 3b7ece48644d35850f4ced4c2cbc2cf8413f58e0
+- name: github.com/kelseyhightower/envconfig
+  version: 9aca109c9aec4633fced9717c4a09ecab3d33111
 - name: github.com/lunixbochs/vtclean
   version: 4fbf7632a2c6d3fbdb9931439bdbbeded02cbe36
 - name: github.com/mailru/easyjson
@@ -87,6 +100,10 @@ imports:
   version: f1f1a805ed361a0e078bb537e4ea78cd37dcf065
   subpackages:
   - codec
+- name: golang.org/x/crypto
+  version: 1f22c0103821b9390939b6776727195525381532
+  subpackages:
+  - ssh/terminal
 - name: golang.org/x/net
   version: e90d6d0afc4c315a0d87a568ae68577cc15149a0
   subpackages:
@@ -133,7 +150,7 @@ imports:
 - name: gopkg.in/yaml.v2
   version: 53feefa2559fb8dfa8d81baad31be332c97d6c77
 - name: k8s.io/client-go
-  version: 49f8f1bf914a4976d303f68b0c2276452f551d34
+  version: 24b73253cdf216313fc6bcc0b459d48dc838a24f
   subpackages:
   - discovery
   - kubernetes
@@ -213,6 +230,7 @@ imports:
   - pkg/util/errors
   - pkg/util/flowcontrol
   - pkg/util/framer
+  - pkg/util/homedir
   - pkg/util/integer
   - pkg/util/intstr
   - pkg/util/json
@@ -234,11 +252,15 @@ imports:
   - plugin/pkg/client/auth/gcp
   - plugin/pkg/client/auth/oidc
   - rest
+  - tools/auth
+  - tools/clientcmd
   - tools/clientcmd/api
+  - tools/clientcmd/api/latest
+  - tools/clientcmd/api/v1
   - tools/metrics
   - transport
 - name: k8s.io/kubernetes
-  version: 7f74d48586ca09c9f690698d7b19fe0c3d8a9f44
+  version: 31fbb771a2872752b90c324987e59dbbc19fa909
   subpackages:
   - pkg/util/ratelimit
 testImports: []
