@@ -1,4 +1,4 @@
-# The Steward Framework
+# The Steward Framework [![Build Status](https://travis-ci.org/deis/steward-framework.svg?branch=master)](https://travis-ci.org/deis/steward-framework)
 
 This repository contains the Steward Framework for creating service catalog controllers.
 

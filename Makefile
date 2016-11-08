@@ -28,7 +28,7 @@ test-unit:
 	${DEV_ENV_CMD} sh -c 'go test $$(glide nv)'
 
 test-all:
-	${DEV_ENV_CMD} sh -c 'go run test-utils/test_driver.go go test -tags integration $$(glide nv)'
+	${DEV_ENV_CMD} sh -c 'go run testing/test_driver.go go test -tags integration $$(glide nv)'
 
 test-cover:
-	@${DEV_ENV_CMD} sh -c 'go run test-utils/test_driver.go _scripts/test-cover.sh'
+	@${DEV_ENV_CMD} sh -c 'go run testing/test_driver.go _scripts/test-cover.sh'
