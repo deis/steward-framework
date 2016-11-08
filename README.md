@@ -20,7 +20,7 @@ Utilizing the Steward Framework to implement your own service catalog controller
 
 2. Implement the `framework.Cataloger` and `framework.Lifecycler interfaces`. For your convenience, those interfaces are shown below:
 
-    ```
+    ```go
     type Cataloger interface {
 
       List(ctx context.Context) ([]*framework.Service, error)
@@ -62,7 +62,7 @@ Utilizing the Steward Framework to implement your own service catalog controller
 
 4. In your `main()` function, call the blocking `runner.Run(...)`. For convenience, the signature of that function is shown below:
 
-    ```
+    ```go
     func Run(
 	  brokerName string,
 	  namespaces []string,
@@ -77,7 +77,7 @@ Utilizing the Steward Framework to implement your own service catalog controller
 
 The following annotated example is adapted from [steward-cf](https://github.com/deis/steward-cf):
 
-```
+```go
 import "github.com/deis/steward-framework/runner"
 
 // ...
