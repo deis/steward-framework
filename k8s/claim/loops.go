@@ -6,7 +6,7 @@ import (
 
 	"github.com/deis/steward-framework"
 	"github.com/deis/steward-framework/k8s"
-	"k8s.io/client-go/1.4/kubernetes/typed/core/v1"
+	"k8s.io/client-go/kubernetes/typed/core/v1"
 )
 
 var maxAsyncDuration = time.Hour

@@ -9,10 +9,10 @@ import (
 	"github.com/deis/steward-framework/k8s"
 	"github.com/deis/steward-framework/k8s/claim"
 	apiserver "github.com/deis/steward-framework/web/api"
-	"k8s.io/client-go/1.4/kubernetes"
-	"k8s.io/client-go/1.4/pkg/api"
-	errs "k8s.io/client-go/1.4/pkg/api/errors"
-	"k8s.io/client-go/1.4/rest"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/pkg/api"
+	errs "k8s.io/client-go/pkg/api/errors"
+	"k8s.io/client-go/rest"
 )
 
 // Run starts all event and control loops. Steward Framework implementations should invoke this
@@ -44,7 +44,7 @@ func Run(
 		return errCreatingThirdPartyResource{Original: err}
 	}
 
-	catalogInteractor := k8s.NewK8sServiceCatalogInteractor(k8sClient.CoreClient.RESTClient)
+	catalogInteractor := k8s.NewK8sServiceCatalogInteractor(k8sClient.CoreClient.RESTClient())
 
 	rootCtx := context.Background()
 	ctx, cancelFn := context.WithCancel(rootCtx)

@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/deis/steward-framework/k8s"
-	"k8s.io/client-go/1.4/pkg/api"
+	"k8s.io/client-go/pkg/api/v1"
 )
 
 // FakeInteractor is a fake implementation of Interactor, to be use in unit testing
@@ -17,7 +17,7 @@ func (f *FakeInteractor) Get(string) (*k8s.ServicePlanClaimWrapper, error) {
 }
 
 // List is the Interactor interface implementation
-func (f *FakeInteractor) List(opts api.ListOptions) (*k8s.ServicePlanClaimsListWrapper, error) {
+func (f *FakeInteractor) List(opts v1.ListOptions) (*k8s.ServicePlanClaimsListWrapper, error) {
 	return nil, nil
 }
 
@@ -27,6 +27,6 @@ func (f *FakeInteractor) Update(*k8s.ServicePlanClaimWrapper) (*k8s.ServicePlanC
 }
 
 // Watch is the Interactor interface implementation
-func (f *FakeInteractor) Watch(context.Context, api.ListOptions) Watcher {
+func (f *FakeInteractor) Watch(context.Context, v1.ListOptions) Watcher {
 	return nil
 }

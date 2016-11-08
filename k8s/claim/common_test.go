@@ -3,8 +3,8 @@ package claim
 import (
 	"github.com/deis/steward-framework/k8s"
 	"github.com/pborman/uuid"
-	"k8s.io/client-go/1.4/pkg/api/v1"
-	"k8s.io/client-go/1.4/pkg/watch"
+	"k8s.io/client-go/pkg/api/v1"
+	"k8s.io/client-go/pkg/watch"
 )
 
 func getEvent(claim k8s.ServicePlanClaim) *Event {
