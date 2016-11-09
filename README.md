@@ -23,7 +23,10 @@ Utilizing the Steward Framework to implement your own service catalog controller
     ```go
     type Cataloger interface {
 
-      List(ctx context.Context) ([]*framework.Service, error)
+      List(
+        ctx context.Context,
+        brokerSpec framework.BrokerSpec,
+      ) ([]*framework.Service, error)
 
     }
 
@@ -31,26 +34,31 @@ Utilizing the Steward Framework to implement your own service catalog controller
 
       Provision(
         ctx context.Context,
+        brokerSpec framework.BrokerSpec,
         req *framework.ProvisionRequest,
       ) (*framework.ProvisionResponse, error)
 
       Bind(
         ctx context.Context,
+        brokerSpec framework.BrokerSpec,
         req *framework.BindRequest,
       ) (*framework.BindResponse, error)
 
       Unbind(
         ctx context.Context,
+        brokerSpec framework.BrokerSpec,
         req *framework.UnbindRequest,
       ) error
 
       Deprovision(
         ctx context.Context,
+        brokerSpec framework.BrokerSpec,
         req *framework.DeprovisionRequest,
       ) (*framework.DeprovisionResponse, error)
 
       GetOperationStatus(
         ctx context.Context,
+        brokerSpec framework.BrokerSpec,
         req *framework.OperationStatusRequest,
       ) (*framework.OperationStatusResponse, error)
 
@@ -64,8 +72,6 @@ Utilizing the Steward Framework to implement your own service catalog controller
 
     ```go
     func Run(
-	  brokerName string,
-	  namespaces []string,
 	  cataloger framework.Cataloger,
 	  lifecycler framework.Lifecycler,
 	  maxAsyncDuration time.Duration,
@@ -95,8 +101,6 @@ func main() {
   // The Steward Framework takes it from there. The call to runner.Run() will
   // block infinitely or until the framework encounters a fatal error.
   if err = runner.Run(
-    cfg.BrokerName,
-    cfg.Namespaces,
     cataloger,
     lifecycler,
     cfg.getMaxAsyncDuration(),
