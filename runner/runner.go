@@ -16,8 +16,6 @@ import (
 // function LAST in their main() function and can rely upon this function to block program
 // their program from exiting until a fatal error is encountered.
 func Run(
-	brokerName string,
-	namespaces []string,
 	cataloger framework.Cataloger,
 	lifecycler framework.Lifecycler,
 	maxAsyncDuration time.Duration,
