@@ -1,6 +1,8 @@
 package fake
 
 import (
+	"context"
+
 	"github.com/deis/steward-framework"
 )
 
@@ -12,6 +14,6 @@ type Cataloger struct {
 
 // List is the Cataloger interface implementation. It returns a hardcoded, empty array of Service
 // pointers.
-func (f Cataloger) List() ([]*framework.Service, error) {
+func (f Cataloger) List(ctx context.Context, spec framework.BrokerSpec) ([]*framework.Service, error) {
 	return f.Services, nil
 }

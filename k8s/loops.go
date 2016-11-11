@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/deis/steward-framework"
+	"github.com/deis/steward-framework/k8s/broker"
 	"k8s.io/client-go/kubernetes"
 )
 
@@ -17,9 +18,27 @@ func StartControlLoops(
 	k8sClient *kubernetes.Clientset,
 	cataloger framework.Cataloger,
 	lifecycler framework.Lifecycler,
+	globalNamespace string,
 	errCh chan<- error,
 ) {
-	// TODO: Start broker / catalog publish loop
+	restClient := k8sClient.CoreClient.RESTClient()
+	// start broker loop
+	go func() {
+		watchBrokerFn := broker.NewK8sWatchBrokerFunc(restClient)
+		createSvcClassFn := broker.NewK8sCreateServiceClassFunc(restClient)
+		if err := broker.RunLoop(
+			ctx,
+			globalNamespace,
+			watchBrokerFn,
+			cataloger,
+			createSvcClassFn,
+		); err != nil {
+			errCh <- err
+		}
+	}()
+
 	// TODO: Start instance loop
 	// TODO: Start binding loop
+
+	<-ctx.Done()
 }

@@ -6,6 +6,11 @@ import (
 	"k8s.io/client-go/pkg/api/v1"
 )
 
+const (
+	BrokerKind       = "Broker"
+	BrokerKindPlural = "Brokers"
+)
+
 type BrokerState string
 
 const (

@@ -45,6 +45,7 @@ func Run(
 		k8sClient,
 		cataloger,
 		lifecycler,
+		k8s.GlobalNamespace,
 		errCh,
 	)
 
