@@ -20,14 +20,6 @@ func (e errGettingK8sClient) Error() string {
 	return fmt.Sprintf("error creating new k8s client: %s", e.Original)
 }
 
-type errCreatingThirdPartyResource struct {
-	Original error
-}
-
-func (e errCreatingThirdPartyResource) Error() string {
-	return fmt.Sprintf("error creating third party resource: %s", e.Original)
-}
-
 type errPublishingServiceCatalog struct {
 	Original error
 }

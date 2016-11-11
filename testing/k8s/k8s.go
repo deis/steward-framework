@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	kubeConfigFile = "/go/src/github.com/deis/steward-cf/kubeconfig.yaml"
+	kubeConfigFile = "/go/src/github.com/deis/steward-framework/kubeconfig.yaml"
 )
 
 var (

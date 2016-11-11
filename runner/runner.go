@@ -30,7 +30,9 @@ func Run(
 		return errGettingK8sClient{Original: err}
 	}
 
-	// TODO: Execute startup (non-loop) initialization, e.g. create 3PRs if they don't exist
+	if err := k8s.Ensure3PRs(k8sClient); err != nil {
+		return err
+	}
 
 	rootCtx := context.Background()
 	ctx, cancelFn := context.WithCancel(rootCtx)
