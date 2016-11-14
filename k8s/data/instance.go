@@ -17,8 +17,8 @@ type Instance struct {
 type InstanceSpec struct {
 	ID              string              `json:"id"`
 	ServiceClassRef api.ObjectReference `json:"service_class_ref"`
-	// PlanName is the reference to the ServicePlan for this instance.
-	PlanName string
+	// PlanID is the reference to the ServicePlan for this instance.
+	PlanID string
 
 	Parameters map[string]interface{}
 }
