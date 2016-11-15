@@ -14,7 +14,11 @@ type Unbinder struct {
 
 // Unbind is the Unbinder interface implementation. It just records the UnbindRequest and returns
 // nil.
-func (u *Unbinder) Unbind(ctx context.Context, req *framework.UnbindRequest) error {
+func (u *Unbinder) Unbind(
+	ctx context.Context,
+	brokerSpec framework.BrokerSpec,
+	req *framework.UnbindRequest,
+) error {
 	u.Reqs = append(u.Reqs, req)
 	return nil
 }

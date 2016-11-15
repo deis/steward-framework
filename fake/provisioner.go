@@ -18,6 +18,7 @@ type Provisioner struct {
 // returns a hardcoded ProvisionResponse.
 func (p *Provisioner) Provision(
 	ctx context.Context,
+	brokerSpec framework.BrokerSpec,
 	req *framework.ProvisionRequest,
 ) (*framework.ProvisionResponse, error) {
 

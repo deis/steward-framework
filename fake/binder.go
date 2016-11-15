@@ -17,6 +17,7 @@ type Binder struct {
 // hardcoded BindResponse.
 func (b *Binder) Bind(
 	ctx context.Context,
+	brokerSpec framework.BrokerSpec,
 	req *framework.BindRequest,
 ) (*framework.BindResponse, error) {
 
