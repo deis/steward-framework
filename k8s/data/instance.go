@@ -6,6 +6,11 @@ import (
 	"k8s.io/client-go/pkg/api/v1"
 )
 
+const (
+	InstanceKind       = "Instance"
+	InstanceKindPlural = "InstanceKind"
+)
+
 type Instance struct {
 	unversioned.TypeMeta `json:",inline"`
 	v1.ObjectMeta        `json:"metadata,omitempty"`
