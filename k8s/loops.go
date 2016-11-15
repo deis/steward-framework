@@ -5,6 +5,8 @@ import (
 
 	"github.com/deis/steward-framework"
 	"github.com/deis/steward-framework/k8s/broker"
+	"github.com/deis/steward-framework/k8s/instance"
+	"github.com/deis/steward-framework/k8s/refs"
 	"k8s.io/client-go/kubernetes"
 )
 
@@ -22,7 +24,8 @@ func StartControlLoops(
 	errCh chan<- error,
 ) {
 	restClient := k8sClient.CoreClient.RESTClient()
-	// start broker loop
+
+	// Start broker loop
 	go func() {
 		updateBrokerFn := broker.NewK8sUpdateBrokerFunc(restClient)
 		watchBrokerFn := broker.NewK8sWatchBrokerFunc(restClient)
@@ -39,7 +42,20 @@ func StartControlLoops(
 		}
 	}()
 
-	// TODO: Start instance loop
+	// Start instance loop
+	go func() {
+		if err := instance.RunLoop(
+			ctx,
+			instance.NewK8sWatchInstanceFunc(restClient),
+			instance.NewK8sUpdateInstanceFunc(restClient),
+			refs.NewK8sServiceClassGetterFunc(restClient),
+			refs.NewK8sBrokerGetterFunc(restClient),
+			lifecycler,
+		); err != nil {
+			errCh <- err
+		}
+	}()
+
 	// TODO: Start binding loop
 
 	<-ctx.Done()

@@ -7,8 +7,11 @@ import (
 )
 
 const (
-	InstanceKind       = "Instance"
-	InstanceKindPlural = "InstanceKind"
+	InstanceKind                           = "Instance"
+	InstanceKindPlural                     = "Instances"
+	InstanceStatePending     InstanceState = "Pending"
+	InstanceStateProvisioned InstanceState = "Provisioned"
+	InstanceStateFailed      InstanceState = "Failed"
 )
 
 type Instance struct {
@@ -33,9 +36,3 @@ type InstanceStatus struct {
 }
 
 type InstanceState string
-
-const (
-	InstanceStatePending     InstanceState = "Pending"
-	InstanceStateProvisioned InstanceState = "Provisioned"
-	InstanceStateFailed      InstanceState = "Failed"
-)
