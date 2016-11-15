@@ -37,20 +37,23 @@ func TestRunLoopCancel(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel()
 	watcher, fakeWatcher := newFakeWatchBrokerFunc(nil)
-	assert.Err(t, ErrCancelled, RunLoop(ctx, "testns", watcher, nil, nil))
+	updater, updated := newFakeUpdateBrokerFunc(nil)
+	assert.Err(t, ErrCancelled, RunLoop(ctx, "testns", watcher, updater, nil, nil))
 	assert.True(t, fakeWatcher.IsStopped(), "watcher isn't stopped")
+	assert.Equal(t, len(*updated), 0, "number of updated brokers")
 }
 
 func TestRunLoopSuccess(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	watcher, fakeWatcher := newFakeWatchBrokerFunc(nil)
+	updater, updated := newFakeUpdateBrokerFunc(nil)
 	cataloger := fakeCataloger()
 	createSvcClass, createdSvcClasses := newFakeCreateServiceClassFunc(nil)
 
 	errCh := make(chan error)
 	go func() {
-		errCh <- RunLoop(ctx, "testns", watcher, cataloger, createSvcClass)
+		errCh <- RunLoop(ctx, "testns", watcher, updater, cataloger, createSvcClass)
 	}()
 
 	fakeWatcher.Add(&data.Broker{})
@@ -60,6 +63,7 @@ func TestRunLoopSuccess(t *testing.T) {
 	select {
 	case err := <-errCh:
 		assert.Equal(t, len(*createdSvcClasses), len(cataloger.Services), "number of created service classes")
+		assert.Equal(t, len(*updated), 2, "number of updated brokers")
 		assert.Err(t, ErrWatchClosed, err)
 	case <-time.After(errTimeout):
 		t.Fatalf("RunLoop didn't return after %s", errTimeout)
@@ -70,25 +74,29 @@ func TestRunLoopSuccess(t *testing.T) {
 func TestHandleAddBrokerNotABroker(t *testing.T) {
 	ctx := context.Background()
 	cataloger := fake.Cataloger{}
+	updater, updated := newFakeUpdateBrokerFunc(nil)
 	createSvcClass, createdSvcClasses := newFakeCreateServiceClassFunc(nil)
 	evt := watch.Event{
 		Type:   watch.Added,
 		Object: &api.Pod{},
 	}
-	err := handleAddBroker(ctx, cataloger, createSvcClass, evt)
+	err := handleAddBroker(ctx, cataloger, updater, createSvcClass, evt)
 	assert.Err(t, ErrNotABroker, err)
 	assert.Equal(t, len(*createdSvcClasses), 0, "number of create svc classes")
+	assert.Equal(t, len(*updated), 0, "number of updated brokers")
 }
 
 func TestHandleAddBrokerSuccess(t *testing.T) {
 	ctx := context.Background()
 	cataloger := fakeCataloger()
+	updater, updated := newFakeUpdateBrokerFunc(nil)
 	createSvcClass, createdSvcClasses := newFakeCreateServiceClassFunc(nil)
 	evt := watch.Event{
 		Type:   watch.Added,
 		Object: &data.Broker{},
 	}
-	err := handleAddBroker(ctx, cataloger, createSvcClass, evt)
+	err := handleAddBroker(ctx, cataloger, updater, createSvcClass, evt)
 	assert.NoErr(t, err)
 	assert.Equal(t, len(*createdSvcClasses), len(cataloger.Services), "number of create svc classes")
+	assert.Equal(t, len(*updated), 2, "number of updated brokers")
 }

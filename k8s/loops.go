@@ -24,12 +24,14 @@ func StartControlLoops(
 	restClient := k8sClient.CoreClient.RESTClient()
 	// start broker loop
 	go func() {
+		updateBrokerFn := broker.NewK8sUpdateBrokerFunc(restClient)
 		watchBrokerFn := broker.NewK8sWatchBrokerFunc(restClient)
 		createSvcClassFn := broker.NewK8sCreateServiceClassFunc(restClient)
 		if err := broker.RunLoop(
 			ctx,
 			globalNamespace,
 			watchBrokerFn,
+			updateBrokerFn,
 			cataloger,
 			createSvcClassFn,
 		); err != nil {

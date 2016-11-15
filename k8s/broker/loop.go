@@ -20,6 +20,7 @@ func RunLoop(
 	ctx context.Context,
 	namespace string,
 	fn WatchBrokerFunc,
+	updateFn UpdateBrokerFunc,
 	cataloger framework.Cataloger,
 	createSvcClassFunc CreateServiceClassFunc) error {
 	watcher, err := fn(namespace)
@@ -39,7 +40,7 @@ func RunLoop(
 			}
 			switch evt.Type {
 			case watch.Added:
-				if err := handleAddBroker(ctx, cataloger, createSvcClassFunc, evt); err != nil {
+				if err := handleAddBroker(ctx, cataloger, updateFn, createSvcClassFunc, evt); err != nil {
 					// TODO: try the handler again. See https://github.com/deis/steward-framework/issues/26
 					logger.Errorf("add broker event handler failed (%s)", err)
 				}
@@ -51,12 +52,27 @@ func RunLoop(
 func handleAddBroker(
 	ctx context.Context,
 	cataloger framework.Cataloger,
+	updateFn UpdateBrokerFunc,
 	createServiceClass CreateServiceClassFunc,
 	evt watch.Event) error {
 	broker, ok := evt.Object.(*data.Broker)
 	if !ok {
 		return ErrNotABroker
 	}
+
+	broker.Status.State = data.BrokerStatePending
+	if _, err := updateFn(broker); err != nil {
+		return err
+	}
+
+	finalBrokerState := data.BrokerStateFailed
+	defer func() {
+		broker.Status.State = finalBrokerState
+		if _, err := updateFn(broker); err != nil {
+			logger.Errorf("failed to update broker to state %s (%s)", finalBrokerState, err)
+		}
+	}()
+
 	svcs, err := cataloger.List(ctx, broker.Spec)
 	if err != nil {
 		return err
@@ -68,5 +84,6 @@ func handleAddBroker(
 			return err
 		}
 	}
+	finalBrokerState = data.BrokerStateAvailable
 	return nil
 }
