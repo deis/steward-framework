@@ -1,5 +1,5 @@
-hash: 95f4f92054131b0e95f824162d8e4c86d448e1d77972db329c11b41884db0031
-updated: 2016-11-08T13:37:31.820783935-05:00
+hash: b03f0e1240753a6478332f8a7469e47a6f779c605937e7d88097aec3d62ce34c
+updated: 2016-11-16T13:03:57.594123889-05:00
 imports:
 - name: github.com/arschles/assert
   version: bb58b908265b5931732079df03f2818bf2167ba0
@@ -89,13 +89,13 @@ imports:
 - name: github.com/mattn/go-isatty
   version: 66b8e73f3f5cda9f96b69efd03dd3d7fc4a5cdb8
 - name: github.com/pborman/uuid
-  version: 3d4f2ba23642d3cfd06bd4b54cf03d99d95c0f1b
+  version: ca53cad383cad2479bbba7f7a1a05797ec1386e4
 - name: github.com/PuerkitoBio/purell
   version: 8a290539e2e8629dbc4e6bad948158f790ec31f4
 - name: github.com/PuerkitoBio/urlesc
   version: 5bd2802263f21d8788851d5305584c82a5c75d7e
 - name: github.com/spf13/pflag
-  version: c7e63cf4530bcd3ba943729cee0efeff2ebea63f
+  version: 5ccb023bc27df288a957c5e994cd44fd19619465
 - name: github.com/ugorji/go
   version: f1f1a805ed361a0e078bb537e4ea78cd37dcf065
   subpackages:
@@ -150,19 +150,20 @@ imports:
 - name: gopkg.in/yaml.v2
   version: 53feefa2559fb8dfa8d81baad31be332c97d6c77
 - name: k8s.io/client-go
-  version: 24b73253cdf216313fc6bcc0b459d48dc838a24f
+  version: 89c60099837a47cfce19bd14e2d1f16c4670fd58
   subpackages:
   - discovery
   - kubernetes
-  - kubernetes/typed/apps/v1alpha1
+  - kubernetes/typed/apps/v1beta1
   - kubernetes/typed/authentication/v1beta1
   - kubernetes/typed/authorization/v1beta1
   - kubernetes/typed/autoscaling/v1
   - kubernetes/typed/batch/v1
+  - kubernetes/typed/batch/v2alpha1
   - kubernetes/typed/certificates/v1alpha1
   - kubernetes/typed/core/v1
   - kubernetes/typed/extensions/v1beta1
-  - kubernetes/typed/policy/v1alpha1
+  - kubernetes/typed/policy/v1beta1
   - kubernetes/typed/rbac/v1alpha1
   - kubernetes/typed/storage/v1beta1
   - pkg/api
@@ -179,7 +180,7 @@ imports:
   - pkg/apimachinery/registered
   - pkg/apis/apps
   - pkg/apis/apps/install
-  - pkg/apis/apps/v1alpha1
+  - pkg/apis/apps/v1beta1
   - pkg/apis/authentication
   - pkg/apis/authentication/install
   - pkg/apis/authentication/v1beta1
@@ -201,7 +202,7 @@ imports:
   - pkg/apis/extensions/v1beta1
   - pkg/apis/policy
   - pkg/apis/policy/install
-  - pkg/apis/policy/v1alpha1
+  - pkg/apis/policy/v1beta1
   - pkg/apis/rbac
   - pkg/apis/rbac/install
   - pkg/apis/rbac/v1alpha1
@@ -223,6 +224,7 @@ imports:
   - pkg/runtime/serializer/versioning
   - pkg/selection
   - pkg/third_party/forked/golang/reflect
+  - pkg/third_party/forked/golang/template
   - pkg/types
   - pkg/util
   - pkg/util/cert
@@ -234,10 +236,12 @@ imports:
   - pkg/util/integer
   - pkg/util/intstr
   - pkg/util/json
+  - pkg/util/jsonpath
   - pkg/util/labels
   - pkg/util/net
   - pkg/util/parsers
   - pkg/util/rand
+  - pkg/util/ratelimit
   - pkg/util/runtime
   - pkg/util/sets
   - pkg/util/uuid
@@ -259,8 +263,4 @@ imports:
   - tools/clientcmd/api/v1
   - tools/metrics
   - transport
-- name: k8s.io/kubernetes
-  version: 31fbb771a2872752b90c324987e59dbbc19fa909
-  subpackages:
-  - pkg/util/ratelimit
 testImports: []

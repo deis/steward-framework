@@ -27,6 +27,7 @@ import:
 - package: github.com/gorilla/mux
 - package: github.com/pborman/uuid
 - package: k8s.io/client-go
+  version: 89c60099837a47cfce19bd14e2d1f16c4670fd58
 - package: github.com/deis/k8s-claimer
   subpackages:
   - client

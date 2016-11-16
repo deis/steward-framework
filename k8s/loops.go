@@ -24,7 +24,7 @@ func StartControlLoops(
 	globalNamespace string,
 	errCh chan<- error,
 ) {
-	restClient := k8sClient.CoreClient.RESTClient()
+	restClient := k8sClient.CoreV1().RESTClient()
 
 	// Start broker loop
 	go func() {
