@@ -20,20 +20,20 @@ const (
 )
 
 type Binding struct {
-	unversioned.TypeMeta
-	api.ObjectMeta
+	unversioned.TypeMeta `json:",inline"`
+	api.ObjectMeta       `json:"metadata,omitempty"`
 
-	Spec   BindingSpec
-	Status BindingStatus
+	Spec   BindingSpec   `json:"spec"`
+	Status BindingStatus `json:"status"`
 }
 
 type BindingSpec struct {
-	ID          string              `json:"binding_id"`
+	ID          string              `json:"id"`
 	InstanceRef api.ObjectReference `json:"instance_ref"`
 	Parameters  lib.JSONObject      `json:"parameters"`
 	SecretName  string              `json:"secret_name"`
 }
 
 type BindingStatus struct {
-	State BindingState
+	State BindingState `json:"state"`
 }
