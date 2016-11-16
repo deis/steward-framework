@@ -40,7 +40,7 @@ func Run(
 
 	errCh := make(chan error)
 
-	k8s.StartControlLoops(
+	go k8s.StartControlLoops(
 		ctx,
 		k8sClient,
 		cataloger,
