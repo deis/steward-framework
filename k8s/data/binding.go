@@ -6,6 +6,11 @@ import (
 	"k8s.io/client-go/pkg/api/unversioned"
 )
 
+const (
+	BindingKind       = "Binding"
+	BindingKindPlural = "Bindings"
+)
+
 type BindingState string
 
 const (
@@ -23,6 +28,7 @@ type Binding struct {
 }
 
 type BindingSpec struct {
+	ID          string              `json:"binding_id"`
 	InstanceRef api.ObjectReference `json:"instance_ref"`
 	Parameters  lib.JSONObject      `json:"parameters"`
 	SecretName  string              `json:"secret_name"`

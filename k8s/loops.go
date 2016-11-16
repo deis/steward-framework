@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/deis/steward-framework"
+	"github.com/deis/steward-framework/k8s/binding"
 	"github.com/deis/steward-framework/k8s/broker"
 	"github.com/deis/steward-framework/k8s/instance"
 	"github.com/deis/steward-framework/k8s/refs"
@@ -56,7 +57,35 @@ func StartControlLoops(
 		}
 	}()
 
-	// TODO: Start binding loop
+	// start binding loop
+	go func() {
+		watchBindingFn := binding.NewK8sWatchBindingFunc(restClient)
+		updateBindingFn := binding.NewK8sUpdateBindingFunc(restClient)
+
+		brokerGetterFn := refs.NewK8sBrokerGetterFunc(restClient)
+		svcClassGetterFn := refs.NewK8sServiceClassGetterFunc(restClient)
+		instanceGetterFn := refs.NewK8sInstanceGetterFunc(restClient)
+
+		// TODO: remove the hard-coded "default" namespace and instead watch all namespaces and be able
+		// to create secrets in any given namespace.
+		//
+		// See https://github.com/deis/steward-framework/issues/30 and
+		// https://github.com/deis/steward-framework/issues/29 for details on how to resolve
+		secretWriterFunc := binding.NewK8sSecretWriterFunc(k8sClient.Core().Secrets("default"))
+		if err := binding.RunLoop(
+			ctx,
+			"default",
+			lifecycler,
+			secretWriterFunc,
+			watchBindingFn,
+			updateBindingFn,
+			brokerGetterFn,
+			svcClassGetterFn,
+			instanceGetterFn,
+		); err != nil {
+			errCh <- err
+		}
+	}()
 
 	<-ctx.Done()
 }
