@@ -5,5 +5,5 @@ import (
 )
 
 var (
-	logger = loggo.GetLogger("k8s.binding")
+	logger = loggo.GetLogger("framework.k8s.binding")
 )

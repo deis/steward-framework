@@ -5,5 +5,5 @@ import (
 )
 
 var (
-	logger = loggo.GetLogger("web.api")
+	logger = loggo.GetLogger("framework.web.api")
 )
