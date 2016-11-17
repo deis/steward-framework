@@ -12,7 +12,7 @@ import (
 func TestNewDynamicClient(t *testing.T) {
 	restCfg, err := testk8s.GetRESTConfig()
 	assert.NoErr(t, err)
-	dynCl, err := NewDynamicClient(*restCfg)
+	dynCl, err := NewDynamic(*restCfg)
 	assert.NotNil(t, dynCl, "dynamic client")
 	assert.NoErr(t, err)
 }
