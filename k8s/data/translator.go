@@ -2,15 +2,28 @@ package data
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"k8s.io/client-go/pkg/runtime"
 )
 
-// TranslateToTPR translates a runtime.Object into a third party resource given in tpr.
+type ErrMismatchedKinds struct {
+	RawKind  string
+	Expected string
+}
+
+func (e ErrMismatchedKinds) Error() string {
+	return fmt.Sprintf("unstructured kind %s doesn't match TPR kind %s", e.RawKind, e.Expected)
+}
+
+// TranslateToTPR translates a raw runtime.Object into the given tpr.
+// If the translation fails, a non-nil error will be returned. tpr may have been written to, but
+// its contents are not guaranteed.
+//
 // This code was inspired by the TPRObjectToSCObject function introduced in
 // https://github.com/kubernetes-incubator/service-catalog/pull/37/files
-func TranslateToTPR(obj runtime.Object, tpr interface{}) error {
-	jsonEncoded, err := json.Marshal(obj)
+func TranslateToTPR(raw runtime.Object, tpr runtime.Object, expectedKind string) error {
+	jsonEncoded, err := json.Marshal(raw)
 	if err != nil {
 		logger.Errorf("encoding to JSON (%s)", err)
 		return err
@@ -20,10 +33,15 @@ func TranslateToTPR(obj runtime.Object, tpr interface{}) error {
 		logger.Errorf("decoding object to third party resource (%s)", err)
 		return err
 	}
+	rawKind := raw.GetObjectKind().GroupVersionKind().Kind
+	if rawKind != expectedKind {
+		return ErrMismatchedKinds{RawKind: rawKind, Expected: expectedKind}
+	}
 	return nil
 }
 
 // TranslateToUnstructured converts a runtime.Object into a *runtime.Unstructured.
+//
 // This code was inspired by the SCObjectToTPRObject function introduced in
 // https://github.com/kubernetes-incubator/service-catalog/pull/37
 func TranslateToUnstructured(obj runtime.Object) (*runtime.Unstructured, error) {
