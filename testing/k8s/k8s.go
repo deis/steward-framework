@@ -15,19 +15,30 @@ const (
 )
 
 var (
+	restCfg    *rest.Config
 	clientset  *kubernetes.Clientset
 	clientOnce sync.Once
 )
+
+func GetRESTConfig() (*rest.Config, error) {
+	var err error
+	clientOnce.Do(func() {
+		restCfg, err = clientcmd.BuildConfigFromFlags("", kubeConfigFile)
+	})
+	return restCfg, err
+}
 
 // GetClientset returns a *kubernetes.Clientset suitable for use with integration tests against
 // a leased k8s cluster
 func GetClientset() (*kubernetes.Clientset, error) {
 	var err error
 	clientOnce.Do(func() {
-		var config *rest.Config
-		if config, err = clientcmd.BuildConfigFromFlags("", kubeConfigFile); err == nil {
-			clientset, err = kubernetes.NewForConfig(config)
+		var cfg *rest.Config
+		cfg, err = GetRESTConfig()
+		if err != nil {
+			return
 		}
+		clientset, err = kubernetes.NewForConfig(cfg)
 	})
 	return clientset, err
 }
