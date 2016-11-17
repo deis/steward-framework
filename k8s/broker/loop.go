@@ -56,8 +56,8 @@ func handleAddBroker(
 	updateFn UpdateBrokerFunc,
 	createServiceClass CreateServiceClassFunc,
 	evt watch.Event) error {
-	broker, ok := evt.Object.(*data.Broker)
-	if !ok {
+	broker := new(data.Broker)
+	if err := data.TranslateToTPR(evt.Object, broker, data.BrokerKind); err != nil {
 		return ErrNotABroker
 	}
 

@@ -30,8 +30,8 @@ func StartControlLoops(
 
 	// Start broker loop
 	go func() {
-		updateBrokerFn := broker.NewK8sUpdateBrokerFunc(restClient)
-		watchBrokerFn := broker.NewK8sWatchBrokerFunc(restClient)
+		updateBrokerFn := broker.NewK8sUpdateBrokerFunc(dynamicCl)
+		watchBrokerFn := broker.NewK8sWatchBrokerFunc(dynamicCl)
 		createSvcClassFn := broker.NewK8sCreateServiceClassFunc(restClient)
 		if err := broker.RunLoop(
 			ctx,

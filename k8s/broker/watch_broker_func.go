@@ -1,25 +1,27 @@
 package broker
 
 import (
+	"strings"
+
 	"github.com/deis/steward-framework/k8s/data"
-	"github.com/deis/steward-framework/k8s/restutil"
+	"k8s.io/client-go/dynamic"
+	"k8s.io/client-go/pkg/api/unversioned"
 	"k8s.io/client-go/pkg/watch"
-	"k8s.io/client-go/rest"
 )
 
 // WatchBrokerFunc is the function that returns a watch interface for broker resources
 type WatchBrokerFunc func(namespace string) (watch.Interface, error)
 
+var brokerAPIResource = unversioned.APIResource{
+	Name:       strings.ToLower(data.BrokerKindPlural),
+	Namespaced: true,
+	Kind:       data.BrokerKind,
+}
+
 // NewK8sWatchBrokerFunc returns a WatchBrokerFunc backed by a Kubernetes client
-func NewK8sWatchBrokerFunc(restIface rest.Interface) WatchBrokerFunc {
+func NewK8sWatchBrokerFunc(cl *dynamic.Client) WatchBrokerFunc {
 	return func(namespace string) (watch.Interface, error) {
-		url := restutil.AbsPath(
-			restutil.APIVersionBase,
-			restutil.APIVersion,
-			true,
-			namespace,
-			data.BrokerKindPlural,
-		)
-		return restIface.Get().AbsPath(url...).Watch()
+		resCl := cl.Resource(&brokerAPIResource, namespace)
+		return resCl.Watch(&data.Broker{})
 	}
 }
