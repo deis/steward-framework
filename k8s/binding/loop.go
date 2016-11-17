@@ -81,7 +81,7 @@ func handleAddBinding(
 ) error {
 
 	binding := new(data.Binding)
-	if err := data.TranslateToTPR(evt.Object, binding); err != nil {
+	if err := data.TranslateToTPR(evt.Object, binding, data.BindingKind); err != nil {
 		return ErrNotABinding
 	}
 
