@@ -80,18 +80,22 @@ func Ensure3PRs(k8sClient *kubernetes.Clientset) error {
 	tprs := k8sClient.Extensions().ThirdPartyResources()
 
 	if _, err := tprs.Create(broker3PR); err != nil && !errors.IsAlreadyExists(err) {
+		logger.Errorf("error creating the broker third party resource (%s)", err)
 		return errCreatingThirdPartyResource{Original: err}
 	}
 
 	if _, err := tprs.Create(serviceClass3PR); err != nil && !errors.IsAlreadyExists(err) {
+		logger.Errorf("error creating the service class third party resource (%s)", err)
 		return errCreatingThirdPartyResource{Original: err}
 	}
 
 	if _, err := tprs.Create(instance3PR); err != nil && !errors.IsAlreadyExists(err) {
+		logger.Errorf("error creating the instance third party resource (%s)", err)
 		return errCreatingThirdPartyResource{Original: err}
 	}
 
 	if _, err := tprs.Create(binding3PR); err != nil && !errors.IsAlreadyExists(err) {
+		logger.Errorf("error creating the binding third party resource (%s)", err)
 		return errCreatingThirdPartyResource{Original: err}
 	}
 

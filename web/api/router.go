@@ -23,6 +23,7 @@ func Serve(port int, errCh chan<- error) {
 	logger.Infof("starting API server on port %d", port)
 	host := fmt.Sprintf(":%d", port)
 	if err := http.ListenAndServe(host, router); err != nil {
+		logger.Errorf("api health check server (%s)", err)
 		errCh <- err
 	}
 }

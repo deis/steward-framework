@@ -35,9 +35,10 @@ func RunLoop(
 			return ErrCancelled
 		case evt, open := <-ch:
 			if !open {
-				logger.Errorf("the watch channel was closed")
+				logger.Errorf("broker loop watch channel was closed")
 				return ErrWatchClosed
 			}
+			logger.Debugf("broker loop received event")
 			switch evt.Type {
 			case watch.Added:
 				if err := handleAddBroker(ctx, cataloger, updateFn, createSvcClassFunc, evt); err != nil {

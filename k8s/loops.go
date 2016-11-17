@@ -39,6 +39,7 @@ func StartControlLoops(
 			cataloger,
 			createSvcClassFn,
 		); err != nil {
+			logger.Errorf("broker loop (%s)", err)
 			errCh <- err
 		}
 	}()
@@ -53,6 +54,7 @@ func StartControlLoops(
 			refs.NewK8sBrokerGetterFunc(restClient),
 			lifecycler,
 		); err != nil {
+			logger.Errorf("instance loop (%s)", err)
 			errCh <- err
 		}
 	}()
@@ -83,6 +85,7 @@ func StartControlLoops(
 			svcClassGetterFn,
 			instanceGetterFn,
 		); err != nil {
+			logger.Errorf("binding loop (%s)", err)
 			errCh <- err
 		}
 	}()

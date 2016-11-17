@@ -39,9 +39,10 @@ func RunLoop(
 			return ErrCancelled
 		case evt, open := <-ch:
 			if !open {
-				logger.Errorf("the watch channel was closed")
+				logger.Errorf("instance loop watch channel was closed")
 				return ErrWatchClosed
 			}
+			logger.Debugf("instance loop received event")
 			switch evt.Type {
 			case watch.Added:
 				if err := handleAddInstance(
