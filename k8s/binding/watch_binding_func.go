@@ -1,6 +1,8 @@
 package binding
 
 import (
+	"strings"
+
 	"github.com/deis/steward-framework/k8s/data"
 	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/pkg/api/unversioned"
@@ -11,9 +13,9 @@ import (
 type WatchBindingFunc func(namespace string) (watch.Interface, error)
 
 var bindingAPIResource = unversioned.APIResource{
-	Name:       "",
+	Name:       strings.ToLower(data.BindingKindPlural),
 	Namespaced: true,
-	Kind:       data.BindingKindPlural,
+	Kind:       data.BindingKind,
 }
 
 // NewK8sWatchBindingFunc returns a WatchBindingFunc backed by a Kubernetes client
