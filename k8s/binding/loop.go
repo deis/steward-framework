@@ -79,8 +79,9 @@ func handleAddBinding(
 	getInstanceFn refs.InstanceGetterFunc,
 	evt watch.Event,
 ) error {
-	binding, ok := evt.Object.(*data.Binding)
-	if !ok {
+
+	binding := new(data.Binding)
+	if err := data.TranslateToTPR(evt.Object, binding); err != nil {
 		return ErrNotABinding
 	}
 
