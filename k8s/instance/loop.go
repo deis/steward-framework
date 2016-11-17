@@ -82,8 +82,9 @@ func handleAddInstance(
 	getBrokerFn refs.BrokerGetterFunc,
 	evt watch.Event,
 ) error {
-	instance, ok := evt.Object.(*data.Instance)
-	if !ok {
+
+	instance := new(data.Instance)
+	if err := data.TranslateToTPR(evt.Object, instance, data.InstanceKind); err != nil {
 		return ErrNotAnInstance
 	}
 	instance.Status.Status = data.InstanceStatePending
