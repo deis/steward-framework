@@ -8,6 +8,7 @@ import (
 	"github.com/deis/steward-framework/k8s/broker"
 	"github.com/deis/steward-framework/k8s/instance"
 	"github.com/deis/steward-framework/k8s/refs"
+	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/kubernetes"
 )
 
@@ -19,6 +20,7 @@ import (
 func StartControlLoops(
 	ctx context.Context,
 	k8sClient *kubernetes.Clientset,
+	dynamicCl *dynamic.Client,
 	cataloger framework.Cataloger,
 	lifecycler framework.Lifecycler,
 	globalNamespace string,
@@ -61,7 +63,7 @@ func StartControlLoops(
 
 	// start binding loop
 	go func() {
-		watchBindingFn := binding.NewK8sWatchBindingFunc(restClient)
+		watchBindingFn := binding.NewK8sWatchBindingFunc(dynamicCl)
 		updateBindingFn := binding.NewK8sUpdateBindingFunc(restClient)
 
 		brokerGetterFn := refs.NewK8sBrokerGetterFunc(restClient)
