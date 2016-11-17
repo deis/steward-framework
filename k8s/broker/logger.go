@@ -5,5 +5,5 @@ import (
 )
 
 var (
-	logger = loggo.GetLogger("k8s.broker")
+	logger = loggo.GetLogger("framework.k8s.broker")
 )
