@@ -26,7 +26,6 @@ func StartControlLoops(
 	globalNamespace string,
 	errCh chan<- error,
 ) {
-	restClient := k8sClient.CoreV1().RESTClient()
 
 	// Start broker loop
 	go func() {
@@ -52,8 +51,8 @@ func StartControlLoops(
 			ctx,
 			instance.NewK8sWatchInstanceFunc(dynamicCl),
 			instance.NewK8sUpdateInstanceFunc(dynamicCl),
-			refs.NewK8sServiceClassGetterFunc(restClient),
-			refs.NewK8sBrokerGetterFunc(restClient),
+			refs.NewK8sServiceClassGetterFunc(dynamicCl),
+			refs.NewK8sBrokerGetterFunc(dynamicCl),
 			lifecycler,
 		); err != nil {
 			logger.Errorf("instance loop (%s)", err)
@@ -66,9 +65,9 @@ func StartControlLoops(
 		watchBindingFn := binding.NewK8sWatchBindingFunc(dynamicCl)
 		updateBindingFn := binding.NewK8sUpdateBindingFunc(dynamicCl)
 
-		brokerGetterFn := refs.NewK8sBrokerGetterFunc(restClient)
-		svcClassGetterFn := refs.NewK8sServiceClassGetterFunc(restClient)
-		instanceGetterFn := refs.NewK8sInstanceGetterFunc(restClient)
+		brokerGetterFn := refs.NewK8sBrokerGetterFunc(dynamicCl)
+		svcClassGetterFn := refs.NewK8sServiceClassGetterFunc(dynamicCl)
+		instanceGetterFn := refs.NewK8sInstanceGetterFunc(dynamicCl)
 
 		// TODO: remove the hard-coded "default" namespace and instead watch all namespaces and be able
 		// to create secrets in any given namespace.
