@@ -50,8 +50,8 @@ func StartControlLoops(
 	go func() {
 		if err := instance.RunLoop(
 			ctx,
-			instance.NewK8sWatchInstanceFunc(restClient),
-			instance.NewK8sUpdateInstanceFunc(restClient),
+			instance.NewK8sWatchInstanceFunc(dynamicCl),
+			instance.NewK8sUpdateInstanceFunc(dynamicCl),
 			refs.NewK8sServiceClassGetterFunc(restClient),
 			refs.NewK8sBrokerGetterFunc(restClient),
 			lifecycler,
