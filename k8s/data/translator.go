@@ -16,9 +16,11 @@ func (e ErrMismatchedKinds) Error() string {
 	return fmt.Sprintf("unstructured kind %s doesn't match TPR kind %s", e.RawKind, e.Expected)
 }
 
-// TranslateToTPR translates a raw runtime.Object into the given tpr.
-// If the translation fails, a non-nil error will be returned. tpr may have been written to, but
-// its contents are not guaranteed.
+// TranslateToTPR translates a raw runtime.Object into the given tpr. In many cases, this will be
+// used to convert a *runtime.Unstructured into a third party resource.
+//
+// If the translation fails, a non-nil error will be returned. In ese cases, tpr may have been
+// written to, but its contents are not guaranteed.
 //
 // This code was inspired by the TPRObjectToSCObject function introduced in
 // https://github.com/kubernetes-incubator/service-catalog/pull/37/files
