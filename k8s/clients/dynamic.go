@@ -7,9 +7,10 @@ import (
 )
 
 func NewDynamic(cfg rest.Config) (*dynamic.Client, error) {
-	cfg.GroupVersion = &unversioned.GroupVersion{
+	cfg.ContentConfig.GroupVersion = &unversioned.GroupVersion{
 		Group:   "steward.deis.io",
 		Version: "v1",
 	}
+	cfg.APIPath = "apis"
 	return dynamic.NewClient(&cfg)
 }
