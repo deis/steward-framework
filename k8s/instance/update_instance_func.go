@@ -11,7 +11,7 @@ type UpdateInstanceFunc func(*data.Instance) (*data.Instance, error)
 // NewK8sUpdateInstanceFunc returns an UpdateInstanceFunc backed by a Kubernetes client
 func NewK8sUpdateInstanceFunc(cl *dynamic.Client) UpdateInstanceFunc {
 	return func(newInstance *data.Instance) (*data.Instance, error) {
-		resCl := cl.Resource(&instanceAPIResource, newInstance.Namespace)
+		resCl := cl.Resource(data.InstanceAPIResource(), newInstance.Namespace)
 		unstruc, err := data.TranslateToUnstructured(newInstance)
 		if err != nil {
 			return nil, err

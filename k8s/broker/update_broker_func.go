@@ -11,7 +11,7 @@ type UpdateBrokerFunc func(*data.Broker) (*data.Broker, error)
 // NewK8sUpdateBrokerFunc returns an UpdateBrokerFunc backed by a Kubernetes client
 func NewK8sUpdateBrokerFunc(cl *dynamic.Client) UpdateBrokerFunc {
 	return func(newBroker *data.Broker) (*data.Broker, error) {
-		resCl := cl.Resource(&brokerAPIResource, newBroker.Namespace)
+		resCl := cl.Resource(data.BrokerAPIResource(), newBroker.Namespace)
 		unstruc, err := data.TranslateToUnstructured(newBroker)
 		if err != nil {
 			return nil, err

@@ -8,10 +8,10 @@ import (
 // UpdateBindingFunc is the function that can update an instance
 type UpdateBindingFunc func(*data.Binding) (*data.Binding, error)
 
-// NewK8sUpdateInstanceFunc returns an UpdateInstanceFunc backed by a Kubernetes client
+// NewK8sUpdateBindingFunc returns an UpdateBindingFunc backed by a Kubernetes client
 func NewK8sUpdateBindingFunc(cl *dynamic.Client) UpdateBindingFunc {
 	return func(newBinding *data.Binding) (*data.Binding, error) {
-		resCl := cl.Resource(&bindingAPIResource, newBinding.Namespace)
+		resCl := cl.Resource(data.BindingAPIResource(), newBinding.Namespace)
 		unstruc, err := data.TranslateToUnstructured(newBinding)
 		if err != nil {
 			return nil, err

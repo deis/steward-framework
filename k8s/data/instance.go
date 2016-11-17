@@ -1,6 +1,8 @@
 package data
 
 import (
+	"strings"
+
 	"k8s.io/client-go/pkg/api"
 	"k8s.io/client-go/pkg/api/unversioned"
 	"k8s.io/client-go/pkg/api/v1"
@@ -13,6 +15,15 @@ const (
 	InstanceStateProvisioned InstanceState = "Provisioned"
 	InstanceStateFailed      InstanceState = "Failed"
 )
+
+// InstanceAPIResource returns an APIResource to describe the Instance third party resource
+func InstanceAPIResource() *unversioned.APIResource {
+	return &unversioned.APIResource{
+		Name:       strings.ToLower(InstanceKindPlural),
+		Namespaced: true,
+		Kind:       InstanceKind,
+	}
+}
 
 type Instance struct {
 	unversioned.TypeMeta `json:",inline"`
