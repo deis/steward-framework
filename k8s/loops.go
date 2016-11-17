@@ -64,7 +64,7 @@ func StartControlLoops(
 	// start binding loop
 	go func() {
 		watchBindingFn := binding.NewK8sWatchBindingFunc(dynamicCl)
-		updateBindingFn := binding.NewK8sUpdateBindingFunc(restClient)
+		updateBindingFn := binding.NewK8sUpdateBindingFunc(dynamicCl)
 
 		brokerGetterFn := refs.NewK8sBrokerGetterFunc(restClient)
 		svcClassGetterFn := refs.NewK8sServiceClassGetterFunc(restClient)
