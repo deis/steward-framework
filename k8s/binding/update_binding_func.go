@@ -13,7 +13,7 @@ type UpdateBindingFunc func(*data.Binding) (*data.Binding, error)
 // NewK8sUpdateInstanceFunc returns an UpdateInstanceFunc backed by a Kubernetes client
 func NewK8sUpdateBindingFunc(cl *dynamic.Client) UpdateBindingFunc {
 	return func(newBinding *data.Binding) (*data.Binding, error) {
-		resCl := resCl := cl.Resource(&bindingAPIResource, newBinding.Namespace)
+		resCl, resCl := cl.Resource(&bindingAPIResource, newBinding.Namespace)
 		unstruc, err := data.ToUnstructured(newBinding)
 		if err != nil {
 			return nil, err
