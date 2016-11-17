@@ -22,6 +22,8 @@ var bindingAPIResource = unversioned.APIResource{
 func NewK8sWatchBindingFunc(cl *dynamic.Client) WatchBindingFunc {
 	return func(namespace string) (watch.Interface, error) {
 		resCl := cl.Resource(&bindingAPIResource, namespace)
+		// TODO: call watch.Filter here, and call data.TranslateToTPR in the filter func.
+		// Do this so the loop doesn't have to call it and instead can just type-assert
 		return resCl.Watch(&data.Binding{})
 	}
 }
