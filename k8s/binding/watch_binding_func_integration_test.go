@@ -33,7 +33,7 @@ func TestNewK8sWatchBindingFunc(t *testing.T) {
 	unstructuredBinding := runtime.Unstructured{
 		Object: map[string]interface{}{
 			"Kind":       data.BindingKind,
-			"APIVersion": "steward.deis.io/v1",
+			"APIVersion": data.APIVersion,
 			"Metadata": map[string]string{
 				"Name":      bindingName,
 				"Namespace": ns,
@@ -51,7 +51,7 @@ func TestNewK8sWatchBindingFunc(t *testing.T) {
 		binding, ok := evt.Object.(*data.Binding)
 		assert.True(t, ok, "returned event object was not a binding")
 		assert.Equal(t, binding.Kind, data.BindingKind, "kind")
-		assert.Equal(t, binding.APIVersion, "steward.deis.io/v1", "api version")
+		assert.Equal(t, binding.APIVersion, data.APIVersion, "api version")
 		assert.Equal(t, binding.Name, bindingName, "name")
 		assert.Equal(t, binding.Namespace, ns, "namespace")
 	case <-time.After(timeout):

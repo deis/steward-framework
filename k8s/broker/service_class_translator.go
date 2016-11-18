@@ -15,7 +15,10 @@ func translateServiceClass(
 
 	brokerRef := getObjectReference(parentBroker)
 	return &data.ServiceClass{
-		TypeMeta: unversioned.TypeMeta{Kind: data.ServiceClassKind},
+		TypeMeta: unversioned.TypeMeta{
+			APIVersion: data.APIVersion,
+			Kind:       data.ServiceClassKind,
+		},
 		ObjectMeta: v1.ObjectMeta{
 			Name:      serviceClassName(parentBroker, svc),
 			Namespace: parentBroker.Namespace,
