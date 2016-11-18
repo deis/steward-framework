@@ -110,6 +110,7 @@ func handleAddBinding(
 		BindingID:  binding.Spec.ID,
 		Parameters: binding.Spec.Parameters,
 	}
+	logger.Debugf("issuing binding request %+v", *bindReq)
 	bindResp, err := binder.Bind(ctx, broker.Spec, bindReq)
 	if err != nil {
 		logger.Errorf("calling bind operation (%s)", err)
