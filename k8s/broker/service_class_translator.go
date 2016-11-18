@@ -24,7 +24,7 @@ func translateServiceClass(
 			Namespace: parentBroker.Namespace,
 		},
 		BrokerRef:     *brokerRef,
-		ID:            serviceClassID(parentBroker, svc),
+		ID:            svc.ID,
 		BrokerName:    parentBroker.Name,
 		Bindable:      true,
 		Plans:         translatePlans(svc.Plans),
@@ -35,10 +35,6 @@ func translateServiceClass(
 
 func serviceClassName(parentBroker *data.Broker, svc *framework.Service) string {
 	return fmt.Sprintf("%s-%s", parentBroker.Name, svc.Name)
-}
-
-func serviceClassID(parentBroker *data.Broker, svc *framework.Service) string {
-	return fmt.Sprintf("%s-%s", parentBroker.UID, svc.ID)
 }
 
 func translatePlans(plans []framework.ServicePlan) []data.ServicePlan {
