@@ -120,6 +120,7 @@ func handleAddInstance(
 			logger.Errorf("failed to update instance to final state %s (%s)", finalInstanceState, err)
 		}
 	}()
+	logger.Debugf("issuing provisioning request %+v", *req)
 	_, err = lifecycler.Provision(ctx, b.Spec, req)
 	if err != nil {
 		return err
