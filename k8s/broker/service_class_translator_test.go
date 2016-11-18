@@ -19,10 +19,13 @@ func TestTranslateServiceClass(t *testing.T) {
 			Namespace: "testNS",
 		},
 	}
-	svc := &framework.Service{}
+	svc := &framework.Service{
+		ServiceInfo: framework.ServiceInfo{ID: "testid"},
+	}
 	sClass := translateServiceClass(parentBroker, svc)
 	assert.Equal(t, sClass.Kind, data.ServiceClassKind, "kind")
 	assert.Equal(t, sClass.Name, serviceClassName(parentBroker, svc), "name")
+	assert.Equal(t, sClass.ID, svc.ID, "ID")
 	assert.Equal(t, sClass.Namespace, parentBroker.Namespace, "namespace")
 	assert.Equal(t, len(sClass.Plans), len(svc.Plans), "number of plans")
 }
@@ -36,17 +39,6 @@ func TestServiceClassName(t *testing.T) {
 	}
 	name := serviceClassName(broker, svc)
 	assert.Equal(t, name, fmt.Sprintf("%s-%s", broker.Name, svc.Name), "service class name")
-}
-
-func TestServiceClassID(t *testing.T) {
-	broker := &data.Broker{
-		ObjectMeta: v1.ObjectMeta{Name: "testBroker", UID: "testUID"},
-	}
-	svc := &framework.Service{
-		ServiceInfo: framework.ServiceInfo{Name: "testSvc", ID: "testID"},
-	}
-	id := serviceClassID(broker, svc)
-	assert.Equal(t, id, fmt.Sprintf("%s-%s", broker.UID, svc.ID), "service class ID")
 }
 
 func TestTranslatePlans(t *testing.T) {
