@@ -94,10 +94,16 @@ func handleAddInstance(
 	}
 	sc, err := getServiceClassFn(instance.Spec.ServiceClassRef)
 	if err != nil {
+		scNamespace := instance.Spec.ServiceClassRef.Namespace
+		scName := instance.Spec.ServiceClassRef.Name
+		logger.Errorf("couldn't find service class %s/%s", scNamespace, scName)
 		return err
 	}
 	b, err := getBrokerFn(sc.BrokerRef)
 	if err != nil {
+		brokerNamespace := sc.BrokerRef.Namespace
+		brokerName := sc.BrokerRef.Name
+		logger.Errorf("couldn't find broker %s/%s", brokerNamespace, brokerName)
 		return err
 	}
 	req := &framework.ProvisionRequest{
@@ -111,7 +117,7 @@ func handleAddInstance(
 	defer func() {
 		instance.Status.Status = finalInstanceState
 		if _, err = updateFn(instance); err != nil {
-			logger.Errorf("failed to update instance to state %s (%s)", finalInstanceState, err)
+			logger.Errorf("failed to update instance to final state %s (%s)", finalInstanceState, err)
 		}
 	}()
 	_, err = lifecycler.Provision(ctx, b.Spec, req)
