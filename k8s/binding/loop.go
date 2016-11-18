@@ -86,7 +86,8 @@ func handleAddBinding(
 	}
 
 	binding.Status.State = data.BindingStatePending
-	if _, err := updateFn(binding); err != nil {
+	binding, err := updateFn(binding)
+	if err != nil {
 		logger.Errorf("error updating binding state to %s", binding.Status.State)
 		return err
 	}

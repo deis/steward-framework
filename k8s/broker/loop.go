@@ -56,13 +56,15 @@ func handleAddBroker(
 	updateFn UpdateBrokerFunc,
 	createServiceClass CreateServiceClassFunc,
 	evt watch.Event) error {
+
 	broker := new(data.Broker)
 	if err := data.TranslateToTPR(evt.Object, broker, data.BrokerKind); err != nil {
 		return ErrNotABroker
 	}
 
 	broker.Status.State = data.BrokerStatePending
-	if _, err := updateFn(broker); err != nil {
+	broker, err := updateFn(broker)
+	if err != nil {
 		return err
 	}
 

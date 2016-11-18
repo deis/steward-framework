@@ -88,7 +88,8 @@ func handleAddInstance(
 		return ErrNotAnInstance
 	}
 	instance.Status.Status = data.InstanceStatePending
-	if _, err := updateFn(instance); err != nil {
+	instance, err := updateFn(instance)
+	if err != nil {
 		return err
 	}
 	sc, err := getServiceClassFn(instance.Spec.ServiceClassRef)
