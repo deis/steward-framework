@@ -12,7 +12,7 @@ type BrokerGetterFunc func(api.ObjectReference) (*data.Broker, error)
 // NewK8sBrokerGetterFunc returns a BrokerGetterFunc  backed by a real kubernetes client
 func NewK8sBrokerGetterFunc(cl *dynamic.Client) BrokerGetterFunc {
 	return func(ref api.ObjectReference) (*data.Broker, error) {
-		resCl := cl.Resource(data.BindingAPIResource(), ref.Namespace)
+		resCl := cl.Resource(data.BrokerAPIResource(), ref.Namespace)
 		unstruc, err := resCl.Get(ref.Name)
 		if err != nil {
 			return nil, err
