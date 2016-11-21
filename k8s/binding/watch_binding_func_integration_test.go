@@ -42,7 +42,7 @@ func TestNewK8sWatchBindingFunc(t *testing.T) {
 			"Status": map[string]string{},
 		},
 	}
-	resourceCl := dynCl.Resource(&bindingAPIResource, ns)
+	resourceCl := dynCl.Resource(data.BindingAPIResource(), ns)
 	_, createErr := resourceCl.Create(&unstructuredBinding)
 	assert.NoErr(t, createErr)
 	select {

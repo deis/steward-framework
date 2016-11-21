@@ -15,14 +15,15 @@ const (
 )
 
 var (
-	restCfg    *rest.Config
-	clientset  *kubernetes.Clientset
-	clientOnce sync.Once
+	restCfg     *rest.Config
+	clientset   *kubernetes.Clientset
+	restCfgOnce sync.Once
+	clientOnce  sync.Once
 )
 
 func GetRESTConfig() (*rest.Config, error) {
 	var err error
-	clientOnce.Do(func() {
+	restCfgOnce.Do(func() {
 		restCfg, err = clientcmd.BuildConfigFromFlags("", kubeConfigFile)
 	})
 	return restCfg, err
