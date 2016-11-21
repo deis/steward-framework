@@ -9,7 +9,6 @@ import (
 	"github.com/arschles/assert"
 	"github.com/deis/steward-framework/k8s/clients"
 	"github.com/deis/steward-framework/k8s/data"
-	"github.com/deis/steward-framework/k8s/tprs"
 	testk8s "github.com/deis/steward-framework/testing/k8s"
 	"k8s.io/client-go/pkg/api"
 	"k8s.io/client-go/pkg/api/unversioned"
@@ -18,20 +17,15 @@ import (
 
 func TestNewK8sWatchBindingFunc(t *testing.T) {
 	const (
-		ns          = "test"
 		bindingName = "test-binding"
 		timeout     = 500 * time.Millisecond
 	)
-	k8sClient, err := testk8s.GetClientset()
-	assert.NoErr(t, err)
-	assert.NoErr(t, tprs.Ensure3PRs(k8sClient))
-	assert.NoErr(t, testk8s.EnsureNamespace(ns))
 	restCfg, err := testk8s.GetRESTConfig()
 	assert.NoErr(t, err)
 	dynCl, err := clients.NewDynamic(*restCfg)
 	assert.NoErr(t, err)
 	fn := NewK8sWatchBindingFunc(dynCl)
-	watcher, err := fn(ns)
+	watcher, err := fn(testNamespace)
 	assert.NoErr(t, err)
 	defer watcher.Stop()
 	ch := watcher.ResultChan()
@@ -42,14 +36,14 @@ func TestNewK8sWatchBindingFunc(t *testing.T) {
 		},
 		ObjectMeta: api.ObjectMeta{
 			Name:      bindingName,
-			Namespace: ns,
+			Namespace: testNamespace,
 		},
 		Spec:   data.BindingSpec{},
 		Status: data.BindingStatus{},
 	}
 	unstructuredBinding, err := data.TranslateToUnstructured(&origBinding)
 	assert.NoErr(t, err)
-	resourceCl := dynCl.Resource(data.BindingAPIResource(), ns)
+	resourceCl := dynCl.Resource(data.BindingAPIResource(), testNamespace)
 	_, createErr := resourceCl.Create(unstructuredBinding)
 	assert.NoErr(t, createErr)
 	select {
@@ -60,7 +54,7 @@ func TestNewK8sWatchBindingFunc(t *testing.T) {
 		assert.Equal(t, binding.Kind, data.BindingKind, "kind")
 		assert.Equal(t, binding.APIVersion, data.APIVersion, "api version")
 		assert.Equal(t, binding.Name, bindingName, "name")
-		assert.Equal(t, binding.Namespace, ns, "namespace")
+		assert.Equal(t, binding.Namespace, testNamespace, "namespace")
 	case <-time.After(timeout):
 		t.Fatalf("didn't receive an event within %s", timeout)
 	}
