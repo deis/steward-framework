@@ -10,6 +10,8 @@ import (
 	"github.com/deis/steward-framework/k8s/clients"
 	"github.com/deis/steward-framework/k8s/data"
 	testk8s "github.com/deis/steward-framework/testing/k8s"
+	"k8s.io/client-go/pkg/api"
+	"k8s.io/client-go/pkg/api/unversioned"
 	"k8s.io/client-go/pkg/runtime"
 	"k8s.io/client-go/pkg/watch"
 )
@@ -30,18 +32,20 @@ func TestNewK8sWatchBindingFunc(t *testing.T) {
 	assert.NoErr(t, err)
 	defer watcher.Stop()
 	ch := watcher.ResultChan()
-	unstructuredBinding := runtime.Unstructured{
-		Object: map[string]interface{}{
-			"Kind":       data.BindingKind,
-			"APIVersion": data.APIVersion,
-			"Metadata": map[string]string{
-				"Name":      bindingName,
-				"Namespace": ns,
-			},
-			"Spec":   map[string]string{},
-			"Status": map[string]string{},
+	binding := data.Binding{
+		TypeMeta: unversioned.TypeMeta{
+			Kind:       data.BindingKind,
+			APIVersion: data.APIVersion,
 		},
+		Metadata: api.ObjectMeta{
+			Name:      bindingName,
+			Namespace: ns,
+		},
+		Spec:   data.BindingSpec{},
+		Status: data.BindingStatus{},
 	}
+	unstructuredBinding, err := data.TranslateToUnstructured(&binding)
+	assert.NoErr(t, err)
 	resourceCl := dynCl.Resource(data.BindingAPIResource(), ns)
 	_, createErr := resourceCl.Create(&unstructuredBinding)
 	assert.NoErr(t, createErr)
