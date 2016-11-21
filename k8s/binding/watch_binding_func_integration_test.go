@@ -31,7 +31,7 @@ func TestNewK8sWatchBindingFunc(t *testing.T) {
 	assert.NoErr(t, err)
 	defer watcher.Stop()
 	ch := watcher.ResultChan()
-	binding := data.Binding{
+	origBinding := data.Binding{
 		TypeMeta: unversioned.TypeMeta{
 			Kind:       data.BindingKind,
 			APIVersion: data.APIVersion,
@@ -43,7 +43,7 @@ func TestNewK8sWatchBindingFunc(t *testing.T) {
 		Spec:   data.BindingSpec{},
 		Status: data.BindingStatus{},
 	}
-	unstructuredBinding, err := data.TranslateToUnstructured(&binding)
+	unstructuredBinding, err := data.TranslateToUnstructured(&origBinding)
 	assert.NoErr(t, err)
 	resourceCl := dynCl.Resource(data.BindingAPIResource(), ns)
 	_, createErr := resourceCl.Create(unstructuredBinding)
@@ -51,8 +51,8 @@ func TestNewK8sWatchBindingFunc(t *testing.T) {
 	select {
 	case evt := <-ch:
 		assert.Equal(t, evt.Type, watch.Added, "type")
-		binding, ok := evt.Object.(*data.Binding)
-		assert.True(t, ok, "returned event object was not a binding")
+		binding := new(data.Binding)
+		assert.NoErr(t, data.TranslateToTPR(evt.Object, binding, data.BindingKind))
 		assert.Equal(t, binding.Kind, data.BindingKind, "kind")
 		assert.Equal(t, binding.APIVersion, data.APIVersion, "api version")
 		assert.Equal(t, binding.Name, bindingName, "name")
