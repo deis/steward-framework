@@ -12,7 +12,6 @@ import (
 	testk8s "github.com/deis/steward-framework/testing/k8s"
 	"k8s.io/client-go/pkg/api"
 	"k8s.io/client-go/pkg/api/unversioned"
-	"k8s.io/client-go/pkg/runtime"
 	"k8s.io/client-go/pkg/watch"
 )
 
@@ -37,7 +36,7 @@ func TestNewK8sWatchBindingFunc(t *testing.T) {
 			Kind:       data.BindingKind,
 			APIVersion: data.APIVersion,
 		},
-		Metadata: api.ObjectMeta{
+		ObjectMeta: api.ObjectMeta{
 			Name:      bindingName,
 			Namespace: ns,
 		},
@@ -47,7 +46,7 @@ func TestNewK8sWatchBindingFunc(t *testing.T) {
 	unstructuredBinding, err := data.TranslateToUnstructured(&binding)
 	assert.NoErr(t, err)
 	resourceCl := dynCl.Resource(data.BindingAPIResource(), ns)
-	_, createErr := resourceCl.Create(&unstructuredBinding)
+	_, createErr := resourceCl.Create(unstructuredBinding)
 	assert.NoErr(t, createErr)
 	select {
 	case evt := <-ch:
