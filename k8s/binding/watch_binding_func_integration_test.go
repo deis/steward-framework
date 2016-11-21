@@ -18,7 +18,7 @@ import (
 func TestNewK8sWatchBindingFunc(t *testing.T) {
 	const (
 		ns          = "test"
-		bindingName = "testBinding"
+		bindingName = "test-binding"
 		timeout     = 500 * time.Millisecond
 	)
 	assert.NoErr(t, testk8s.EnsureNamespace(ns))
