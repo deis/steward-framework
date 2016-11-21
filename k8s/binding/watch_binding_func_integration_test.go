@@ -9,6 +9,7 @@ import (
 	"github.com/arschles/assert"
 	"github.com/deis/steward-framework/k8s/clients"
 	"github.com/deis/steward-framework/k8s/data"
+	"github.com/deis/steward-framework/k8s/tprs"
 	testk8s "github.com/deis/steward-framework/testing/k8s"
 	"k8s.io/client-go/pkg/api"
 	"k8s.io/client-go/pkg/api/unversioned"
@@ -21,6 +22,9 @@ func TestNewK8sWatchBindingFunc(t *testing.T) {
 		bindingName = "test-binding"
 		timeout     = 500 * time.Millisecond
 	)
+	k8sClient, err := testk8s.GetClientset()
+	assert.NoErr(t, err)
+	assert.NoErr(t, tprs.Ensure3PRs(k8sClient))
 	assert.NoErr(t, testk8s.EnsureNamespace(ns))
 	restCfg, err := testk8s.GetRESTConfig()
 	assert.NoErr(t, err)

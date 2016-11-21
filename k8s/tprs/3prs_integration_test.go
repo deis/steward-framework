@@ -1,6 +1,6 @@
 // +build integration
 
-package k8s
+package tprs
 
 import (
 	"testing"
