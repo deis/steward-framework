@@ -1,6 +1,8 @@
 package data
 
 import (
+	"strings"
+
 	"k8s.io/client-go/pkg/api"
 	"k8s.io/client-go/pkg/api/unversioned"
 	"k8s.io/client-go/pkg/api/v1"
@@ -10,6 +12,14 @@ const (
 	ServiceClassKind       = "ServiceClass"
 	ServiceClassKindPlural = "ServiceClasses"
 )
+
+func ServiceClassAPIResource() *unversioned.APIResource {
+	return &unversioned.APIResource{
+		Name:       strings.ToLower(ServiceClassKindPlural),
+		Namespaced: true,
+		Kind:       ServiceClassKind,
+	}
+}
 
 type ServiceClass struct {
 	unversioned.TypeMeta `json:",inline"`

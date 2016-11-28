@@ -1,4 +1,4 @@
-package k8s
+package tprs
 
 import (
 	"k8s.io/client-go/kubernetes"

@@ -2,23 +2,28 @@ package broker
 
 import (
 	"github.com/deis/steward-framework/k8s/data"
-	"github.com/deis/steward-framework/k8s/restutil"
-	"k8s.io/client-go/rest"
+	"k8s.io/client-go/dynamic"
 )
 
 // CreateServiceClassFunc is the function that can successfully create a ServiceClass
 type CreateServiceClassFunc func(*data.ServiceClass) error
 
 // NewK8sCreateServiceClassFunc returns a CreateServiceClassFunc implemented with restIFace
-func NewK8sCreateServiceClassFunc(restIface rest.Interface) CreateServiceClassFunc {
+func NewK8sCreateServiceClassFunc(cl *dynamic.Client) CreateServiceClassFunc {
 	return func(sClass *data.ServiceClass) error {
-		url := restutil.AbsPath(
-			restutil.APIVersionBase,
-			restutil.APIVersion,
-			false,
-			sClass.Namespace,
-			data.ServiceClassKindPlural,
-		)
-		return restIface.Post().AbsPath(url...).Do().Error()
+		resCl := cl.Resource(data.ServiceClassAPIResource(), sClass.Namespace)
+		unstruc, err := data.TranslateToUnstructured(sClass)
+		if err != nil {
+			return err
+		}
+		retUnstruc, err := resCl.Create(unstruc)
+		if err != nil {
+			return err
+		}
+		retSClass := new(data.ServiceClass)
+		if err := data.TranslateToTPR(retUnstruc, retSClass, data.ServiceClassKind); err != nil {
+			return err
+		}
+		return nil
 	}
 }

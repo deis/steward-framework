@@ -8,6 +8,7 @@ import (
 	"github.com/deis/steward-framework/k8s/broker"
 	"github.com/deis/steward-framework/k8s/instance"
 	"github.com/deis/steward-framework/k8s/refs"
+	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/kubernetes"
 )
 
@@ -19,18 +20,18 @@ import (
 func StartControlLoops(
 	ctx context.Context,
 	k8sClient *kubernetes.Clientset,
+	dynamicCl *dynamic.Client,
 	cataloger framework.Cataloger,
 	lifecycler framework.Lifecycler,
 	globalNamespace string,
 	errCh chan<- error,
 ) {
-	restClient := k8sClient.CoreV1().RESTClient()
 
 	// Start broker loop
 	go func() {
-		updateBrokerFn := broker.NewK8sUpdateBrokerFunc(restClient)
-		watchBrokerFn := broker.NewK8sWatchBrokerFunc(restClient)
-		createSvcClassFn := broker.NewK8sCreateServiceClassFunc(restClient)
+		updateBrokerFn := broker.NewK8sUpdateBrokerFunc(dynamicCl)
+		watchBrokerFn := broker.NewK8sWatchBrokerFunc(dynamicCl)
+		createSvcClassFn := broker.NewK8sCreateServiceClassFunc(dynamicCl)
 		if err := broker.RunLoop(
 			ctx,
 			globalNamespace,
@@ -48,10 +49,10 @@ func StartControlLoops(
 	go func() {
 		if err := instance.RunLoop(
 			ctx,
-			instance.NewK8sWatchInstanceFunc(restClient),
-			instance.NewK8sUpdateInstanceFunc(restClient),
-			refs.NewK8sServiceClassGetterFunc(restClient),
-			refs.NewK8sBrokerGetterFunc(restClient),
+			instance.NewK8sWatchInstanceFunc(dynamicCl),
+			instance.NewK8sUpdateInstanceFunc(dynamicCl),
+			refs.NewK8sServiceClassGetterFunc(dynamicCl),
+			refs.NewK8sBrokerGetterFunc(dynamicCl),
 			lifecycler,
 		); err != nil {
 			logger.Errorf("instance loop (%s)", err)
@@ -61,12 +62,12 @@ func StartControlLoops(
 
 	// start binding loop
 	go func() {
-		watchBindingFn := binding.NewK8sWatchBindingFunc(restClient)
-		updateBindingFn := binding.NewK8sUpdateBindingFunc(restClient)
+		watchBindingFn := binding.NewK8sWatchBindingFunc(dynamicCl)
+		updateBindingFn := binding.NewK8sUpdateBindingFunc(dynamicCl)
 
-		brokerGetterFn := refs.NewK8sBrokerGetterFunc(restClient)
-		svcClassGetterFn := refs.NewK8sServiceClassGetterFunc(restClient)
-		instanceGetterFn := refs.NewK8sInstanceGetterFunc(restClient)
+		brokerGetterFn := refs.NewK8sBrokerGetterFunc(dynamicCl)
+		svcClassGetterFn := refs.NewK8sServiceClassGetterFunc(dynamicCl)
+		instanceGetterFn := refs.NewK8sInstanceGetterFunc(dynamicCl)
 
 		// TODO: remove the hard-coded "default" namespace and instead watch all namespaces and be able
 		// to create secrets in any given namespace.

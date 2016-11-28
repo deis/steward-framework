@@ -20,6 +20,14 @@ func (e errGettingK8sClient) Error() string {
 	return fmt.Sprintf("error creating new k8s client: %s", e.Original)
 }
 
+type errGettingDynamicClient struct {
+	Original error
+}
+
+func (e errGettingDynamicClient) Error() string {
+	return fmt.Sprintf("error creating new dynamic client: %s", e.Original)
+}
+
 type errPublishingServiceCatalog struct {
 	Original error
 }

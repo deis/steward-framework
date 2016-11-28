@@ -1,6 +1,8 @@
 package data
 
 import (
+	"strings"
+
 	"github.com/deis/steward-framework/lib"
 	"k8s.io/client-go/pkg/api"
 	"k8s.io/client-go/pkg/api/unversioned"
@@ -18,6 +20,15 @@ const (
 	BindingStateBound   BindingState = "Bound"
 	BindingStateFailed  BindingState = "Failed"
 )
+
+// BindingAPIResource returns an APIResource to describe the Binding third party resource
+func BindingAPIResource() *unversioned.APIResource {
+	return &unversioned.APIResource{
+		Name:       strings.ToLower(BindingKindPlural),
+		Namespaced: true,
+		Kind:       BindingKind,
+	}
+}
 
 type Binding struct {
 	unversioned.TypeMeta `json:",inline"`

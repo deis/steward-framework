@@ -31,3 +31,4 @@ import:
 - package: github.com/deis/k8s-claimer
   subpackages:
   - client
+- package: github.com/technosophos/moniker

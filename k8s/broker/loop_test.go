@@ -10,6 +10,7 @@ import (
 	"github.com/deis/steward-framework/fake"
 	"github.com/deis/steward-framework/k8s/data"
 	"k8s.io/client-go/pkg/api"
+	"k8s.io/client-go/pkg/api/unversioned"
 	"k8s.io/client-go/pkg/watch"
 )
 
@@ -56,7 +57,9 @@ func TestRunLoopSuccess(t *testing.T) {
 		errCh <- RunLoop(ctx, "testns", watcher, updater, cataloger, createSvcClass)
 	}()
 
-	fakeWatcher.Add(&data.Broker{})
+	broker := new(data.Broker)
+	broker.Kind = data.BrokerKind
+	fakeWatcher.Add(broker)
 	fakeWatcher.Stop()
 
 	const errTimeout = 100 * time.Millisecond
@@ -77,8 +80,10 @@ func TestHandleAddBrokerNotABroker(t *testing.T) {
 	updater, updated := newFakeUpdateBrokerFunc(nil)
 	createSvcClass, createdSvcClasses := newFakeCreateServiceClassFunc(nil)
 	evt := watch.Event{
-		Type:   watch.Added,
-		Object: &api.Pod{},
+		Type: watch.Added,
+		Object: &api.Pod{
+			TypeMeta: unversioned.TypeMeta{Kind: "Pod"},
+		},
 	}
 	err := handleAddBroker(ctx, cataloger, updater, createSvcClass, evt)
 	assert.Err(t, ErrNotABroker, err)
@@ -91,9 +96,11 @@ func TestHandleAddBrokerSuccess(t *testing.T) {
 	cataloger := fakeCataloger()
 	updater, updated := newFakeUpdateBrokerFunc(nil)
 	createSvcClass, createdSvcClasses := newFakeCreateServiceClassFunc(nil)
+	broker := new(data.Broker)
+	broker.Kind = data.BrokerKind
 	evt := watch.Event{
 		Type:   watch.Added,
-		Object: &data.Broker{},
+		Object: broker,
 	}
 	err := handleAddBroker(ctx, cataloger, updater, createSvcClass, evt)
 	assert.NoErr(t, err)

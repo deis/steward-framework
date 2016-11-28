@@ -43,7 +43,9 @@ func TestRunLoopAddSuccess(t *testing.T) {
 		errCh <- RunLoop(ctx, watcher, updater, getServiceClassFn, getBrokerFn, lifecycler)
 	}()
 
-	fakeWatcher.Add(&data.Instance{})
+	inst := new(data.Instance)
+	inst.Kind = data.InstanceKind
+	fakeWatcher.Add(inst)
 	fakeWatcher.Stop()
 
 	const errTimeout = 100 * time.Millisecond
@@ -118,9 +120,11 @@ func TestHandleAddInstanceSuccess(t *testing.T) {
 	lifecycler := &fake.Lifecycler{
 		Provisioner: provisioner,
 	}
+	inst := new(data.Instance)
+	inst.Kind = data.InstanceKind
 	evt := watch.Event{
 		Type:   watch.Added,
-		Object: &data.Instance{},
+		Object: inst,
 	}
 	err := handleAddInstance(ctx, lifecycler, updater, getServiceClassFn, getBrokerFn, evt)
 	assert.NoErr(t, err)

@@ -7,6 +7,8 @@ import (
 
 	"github.com/deis/steward-framework"
 	"github.com/deis/steward-framework/k8s"
+	"github.com/deis/steward-framework/k8s/clients"
+	"github.com/deis/steward-framework/k8s/tprs"
 	"github.com/deis/steward-framework/web/api"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
@@ -29,8 +31,12 @@ func Run(
 	if err != nil {
 		return errGettingK8sClient{Original: err}
 	}
+	dynClient, err := clients.NewDynamic(*config)
+	if err != nil {
+		return errGettingDynamicClient{Original: err}
+	}
 
-	if err := k8s.Ensure3PRs(k8sClient); err != nil {
+	if err := tprs.Ensure3PRs(k8sClient); err != nil {
 		return err
 	}
 
@@ -43,6 +49,7 @@ func Run(
 	go k8s.StartControlLoops(
 		ctx,
 		k8sClient,
+		dynClient,
 		cataloger,
 		lifecycler,
 		k8s.GlobalNamespace,

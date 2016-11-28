@@ -79,13 +79,15 @@ func handleAddBinding(
 	getInstanceFn refs.InstanceGetterFunc,
 	evt watch.Event,
 ) error {
-	binding, ok := evt.Object.(*data.Binding)
-	if !ok {
+
+	binding := new(data.Binding)
+	if err := data.TranslateToTPR(evt.Object, binding, data.BindingKind); err != nil {
 		return ErrNotABinding
 	}
 
 	binding.Status.State = data.BindingStatePending
-	if _, err := updateFn(binding); err != nil {
+	binding, err := updateFn(binding)
+	if err != nil {
 		logger.Errorf("error updating binding state to %s", binding.Status.State)
 		return err
 	}
@@ -108,6 +110,7 @@ func handleAddBinding(
 		BindingID:  binding.Spec.ID,
 		Parameters: binding.Spec.Parameters,
 	}
+	logger.Debugf("issuing binding request %+v", *bindReq)
 	bindResp, err := binder.Bind(ctx, broker.Spec, bindReq)
 	if err != nil {
 		logger.Errorf("calling bind operation (%s)", err)

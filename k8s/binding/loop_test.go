@@ -11,6 +11,7 @@ import (
 	"github.com/deis/steward-framework/k8s/data"
 	"github.com/deis/steward-framework/k8s/refs"
 	"k8s.io/client-go/pkg/api"
+	"k8s.io/client-go/pkg/api/unversioned"
 	"k8s.io/client-go/pkg/watch"
 )
 
@@ -68,7 +69,9 @@ func TestRunLoopSuccess(t *testing.T) {
 			instanceGetterFn,
 		)
 	}()
-	fakeWatcher.Add(&data.Binding{})
+	binding := new(data.Binding)
+	binding.Kind = data.BindingKind
+	fakeWatcher.Add(binding)
 	fakeWatcher.Stop()
 
 	const errTimeout = 100 * time.Millisecond
@@ -87,8 +90,10 @@ func TestRunLoopSuccess(t *testing.T) {
 
 func TestHandleAddBindingNotABinding(t *testing.T) {
 	evt := watch.Event{
-		Type:   watch.Added,
-		Object: &api.Pod{},
+		Type: watch.Added,
+		Object: &api.Pod{
+			TypeMeta: unversioned.TypeMeta{Kind: "Pod"},
+		},
 	}
 	err := handleAddBinding(
 		context.Background(),
@@ -111,9 +116,11 @@ func TestHandleAddBindingSuccess(t *testing.T) {
 	brokerGetterFn := refs.NewFakeBrokerGetterFunc(&data.Broker{}, nil)
 	svcClassGetterFn := refs.NewFakeServiceClassGetterFunc(&data.ServiceClass{}, nil)
 	instanceGetterFn := refs.NewFakeInstanceGetterFunc(&data.Instance{}, nil)
+	binding := new(data.Binding)
+	binding.Kind = data.BindingKind
 	evt := watch.Event{
 		Type:   watch.Added,
-		Object: &data.Binding{},
+		Object: binding,
 	}
 
 	err := handleAddBinding(
