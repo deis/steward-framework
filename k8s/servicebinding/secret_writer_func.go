@@ -1,4 +1,4 @@
-package binding
+package servicebinding
 
 import (
 	"k8s.io/client-go/kubernetes/typed/core/v1"

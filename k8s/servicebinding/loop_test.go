@@ -1,4 +1,4 @@
-package binding
+package servicebinding
 
 import (
 	"context"
@@ -18,9 +18,9 @@ import (
 func TestRunLoopCancel(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel()
-	watcher, fakeWatcher := newFakeWatchBindingFunc(nil)
+	watcher, fakeWatcher := newFakeWatchServiceBindingFunc(nil)
 	secretWriter, writtenSecrets := newFakeSecretWriterFunc(nil)
-	updateBindingFn, updatedBindings := newFakeUpdateBindingFunc(nil)
+	updateServiceBindingFn, updatedServiceBindings := newFakeUpdateServiceBindingFunc(nil)
 	binder := &fake.Binder{}
 	assert.Err(t, ErrCancelled, RunLoop(
 		ctx,
@@ -28,7 +28,7 @@ func TestRunLoopCancel(t *testing.T) {
 		binder,
 		secretWriter,
 		watcher,
-		updateBindingFn,
+		updateServiceBindingFn,
 		refs.NewFakeServiceBrokerGetterFunc(nil, nil),
 		refs.NewFakeServiceClassGetterFunc(nil, nil),
 		refs.NewFakeServiceInstanceGetterFunc(nil, nil),
@@ -36,16 +36,16 @@ func TestRunLoopCancel(t *testing.T) {
 	assert.Equal(t, len(binder.Reqs), 0, "number of bind calls")
 	assert.True(t, fakeWatcher.IsStopped(), "watcher was not stopped")
 	assert.Equal(t, len(*writtenSecrets), 0, "number of secrets written")
-	assert.Equal(t, len(*updatedBindings), 0, "number of bindings written")
+	assert.Equal(t, len(*updatedServiceBindings), 0, "number of service bindings written")
 }
 
 func TestRunLoopSuccess(t *testing.T) {
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	watcher, fakeWatcher := newFakeWatchBindingFunc(nil)
+	watcher, fakeWatcher := newFakeWatchServiceBindingFunc(nil)
 	secretWriter, writtenSecrets := newFakeSecretWriterFunc(nil)
-	updateBindingFn, updatedBindings := newFakeUpdateBindingFunc(nil)
+	updateServiceBindingFn, updatedServiceBindings := newFakeUpdateServiceBindingFunc(nil)
 	binder := &fake.Binder{
 		Res: &framework.BindResponse{
 			Creds: map[string]interface{}{"a": "b"},
@@ -63,15 +63,15 @@ func TestRunLoopSuccess(t *testing.T) {
 			binder,
 			secretWriter,
 			watcher,
-			updateBindingFn,
+			updateServiceBindingFn,
 			svcBrokerGetterFn,
 			svcClassGetterFn,
 			svcInstanceGetterFn,
 		)
 	}()
-	binding := new(data.Binding)
-	binding.Kind = data.BindingKind
-	fakeWatcher.Add(binding)
+	serviceBinding := new(data.ServiceBinding)
+	serviceBinding.Kind = data.ServiceBindingKind
+	fakeWatcher.Add(serviceBinding)
 	fakeWatcher.Stop()
 
 	const errTimeout = 100 * time.Millisecond
@@ -80,7 +80,7 @@ func TestRunLoopSuccess(t *testing.T) {
 		assert.Equal(t, len(*writtenSecrets), 1, "number of written secrets")
 		writtenSecret := (*writtenSecrets)[0]
 		assert.Equal(t, len(writtenSecret.Data), len(binder.Res.Creds), "number of credentials in the secret")
-		assert.Equal(t, len(*updatedBindings), 2, "number of updated bindings")
+		assert.Equal(t, len(*updatedServiceBindings), 2, "number of updated service bindings")
 		assert.Equal(t, len(binder.Reqs), 1, "number of bind calls")
 		assert.Err(t, ErrWatchClosed, err)
 	case <-time.After(errTimeout):
@@ -88,45 +88,45 @@ func TestRunLoopSuccess(t *testing.T) {
 	}
 }
 
-func TestHandleAddBindingNotABinding(t *testing.T) {
+func TestHandleAddServiceBindingNotAServiceBinding(t *testing.T) {
 	evt := watch.Event{
 		Type: watch.Added,
 		Object: &api.Pod{
 			TypeMeta: unversioned.TypeMeta{Kind: "Pod"},
 		},
 	}
-	err := handleAddBinding(
+	err := handleAddServiceBinding(
 		context.Background(),
 		nil, // framework.Binder
-		nil, // UpdateBindingFunc,
+		nil, // UpdateServiceBindingFunc,
 		nil, // SecretWriterFunc
 		nil, // refs.ServiceBrokerGetterFunc
 		nil, // refs.ServiceClassGetterFunc
 		nil, // refs.ServiceInstanceGetterFunc
 		evt,
 	)
-	assert.Err(t, ErrNotABinding, err)
+	assert.Err(t, ErrNotAServiceBinding, err)
 }
 
-func TestHandleAddBindingSuccess(t *testing.T) {
+func TestHandleAddServiceBindingSuccess(t *testing.T) {
 	ctx := context.Background()
 	binder := &fake.Binder{Res: &framework.BindResponse{}}
-	updateBindingFn, updatedBindings := newFakeUpdateBindingFunc(nil)
+	updateServiceBindingFn, updatedServiceBindings := newFakeUpdateServiceBindingFunc(nil)
 	secretWriterFn, writtenSecrets := newFakeSecretWriterFunc(nil)
 	serviceBrokerGetterFn := refs.NewFakeServiceBrokerGetterFunc(&data.ServiceBroker{}, nil)
 	svcClassGetterFn := refs.NewFakeServiceClassGetterFunc(&data.ServiceClass{}, nil)
 	svcInstanceGetterFn := refs.NewFakeServiceInstanceGetterFunc(&data.ServiceInstance{}, nil)
-	binding := new(data.Binding)
-	binding.Kind = data.BindingKind
+	serviceBinding := new(data.ServiceBinding)
+	serviceBinding.Kind = data.ServiceBindingKind
 	evt := watch.Event{
 		Type:   watch.Added,
-		Object: binding,
+		Object: serviceBinding,
 	}
 
-	err := handleAddBinding(
+	err := handleAddServiceBinding(
 		ctx,
 		binder,
-		updateBindingFn,
+		updateServiceBindingFn,
 		secretWriterFn,
 		serviceBrokerGetterFn,
 		svcClassGetterFn,
@@ -136,6 +136,6 @@ func TestHandleAddBindingSuccess(t *testing.T) {
 
 	assert.NoErr(t, err)
 	assert.Equal(t, len(binder.Reqs), 1, "number of bind requests")
-	assert.Equal(t, len(*updatedBindings), 2, "number of update Binding resources")
+	assert.Equal(t, len(*updatedServiceBindings), 2, "number of updated service binding resources")
 	assert.Equal(t, len(*writtenSecrets), 1, "number of written secrets")
 }

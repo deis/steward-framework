@@ -21,14 +21,14 @@ func GetDependenciesForServiceInstance(
 	return serviceBroker, sClass, nil
 }
 
-// GetDependenciesForBinding fetches the entire reference tree for binding
-func GetDependenciesForBinding(
-	binding *data.Binding,
+// GetDependenciesForServiceBinding fetches the entire reference tree for service binding
+func GetDependenciesForServiceBinding(
+	serviceBinding *data.ServiceBinding,
 	getServiceBroker ServiceBrokerGetterFunc,
 	getServiceClass ServiceClassGetterFunc,
 	getServiceInstance ServiceInstanceGetterFunc,
 ) (*data.ServiceBroker, *data.ServiceClass, *data.ServiceInstance, error) {
-	inst, err := getServiceInstance(binding.Spec.ServiceInstanceRef)
+	inst, err := getServiceInstance(serviceBinding.Spec.ServiceInstanceRef)
 	if err != nil {
 		return nil, nil, nil, err
 	}

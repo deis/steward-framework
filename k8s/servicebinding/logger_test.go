@@ -1,4 +1,4 @@
-package binding
+package servicebinding
 
 import (
 	"github.com/juju/loggo"

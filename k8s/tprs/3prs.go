@@ -59,13 +59,13 @@ var serviceInstance3PR = &ext.ThirdPartyResource{
 	},
 }
 
-var binding3PR = &ext.ThirdPartyResource{
+var serviceBinding3PR = &ext.ThirdPartyResource{
 	TypeMeta: unversioned.TypeMeta{
 		Kind:       "ThirdPartyResource",
 		APIVersion: "extensions/v1beta1",
 	},
 	ObjectMeta: v1.ObjectMeta{
-		Name: "binding.steward.deis.io",
+		Name: "service-binding.steward.deis.io",
 		Labels: map[string]string{
 			"heritage": "steward",
 		},
@@ -94,8 +94,8 @@ func Ensure3PRs(k8sClient *kubernetes.Clientset) error {
 		return errCreatingThirdPartyResource{Original: err}
 	}
 
-	if _, err := tprs.Create(binding3PR); err != nil && !errors.IsAlreadyExists(err) {
-		logger.Errorf("error creating the binding third party resource (%s)", err)
+	if _, err := tprs.Create(serviceBinding3PR); err != nil && !errors.IsAlreadyExists(err) {
+		logger.Errorf("error creating the service binding third party resource (%s)", err)
 		return errCreatingThirdPartyResource{Original: err}
 	}
 

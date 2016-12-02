@@ -1,4 +1,4 @@
-package binding
+package servicebinding
 
 import (
 	"context"
@@ -13,9 +13,9 @@ import (
 )
 
 var (
-	ErrCancelled   = errors.New("stopped")
-	ErrNotABinding = errors.New("not a binding")
-	ErrWatchClosed = errors.New("watch closed")
+	ErrCancelled          = errors.New("stopped")
+	ErrNotAServiceBinding = errors.New("not a service binding")
+	ErrWatchClosed        = errors.New("watch closed")
 )
 
 // RunLoop starts a blocking control loop that watches and takes action on serviceBroker resources.
@@ -26,8 +26,8 @@ func RunLoop(
 	namespace string,
 	binder framework.Binder,
 	secretWriter SecretWriterFunc,
-	fn WatchBindingFunc,
-	updateFn UpdateBindingFunc,
+	fn WatchServiceBindingFunc,
+	updateFn UpdateServiceBindingFunc,
 	getSvcBrokerFn refs.ServiceBrokerGetterFunc,
 	getSvcClassFn refs.ServiceClassGetterFunc,
 	getSvcInstanceFn refs.ServiceInstanceGetterFunc,
@@ -45,13 +45,13 @@ func RunLoop(
 			return ErrCancelled
 		case evt, open := <-ch:
 			if !open {
-				logger.Errorf("binding loop watch channel was closed")
+				logger.Errorf("service binding loop watch channel was closed")
 				return ErrWatchClosed
 			}
-			logger.Debugf("binding loop received event")
+			logger.Debugf("service binding loop received event")
 			switch evt.Type {
 			case watch.Added:
-				if err := handleAddBinding(
+				if err := handleAddServiceBinding(
 					ctx,
 					binder,
 					updateFn,
@@ -62,17 +62,17 @@ func RunLoop(
 					evt,
 				); err != nil {
 					// TODO: try the handler again. See https://github.com/deis/steward-framework/issues/34
-					logger.Errorf("add binding event handler failed (%s)", err)
+					logger.Errorf("add service binding event handler failed (%s)", err)
 				}
 			}
 		}
 	}
 }
 
-func handleAddBinding(
+func handleAddServiceBinding(
 	ctx context.Context,
 	binder framework.Binder,
-	updateFn UpdateBindingFunc,
+	updateFn UpdateServiceBindingFunc,
 	secretWriter SecretWriterFunc,
 	getSvcBrokerFn refs.ServiceBrokerGetterFunc,
 	getSvcClassFn refs.ServiceClassGetterFunc,
@@ -80,26 +80,26 @@ func handleAddBinding(
 	evt watch.Event,
 ) error {
 
-	binding := new(data.Binding)
-	if err := data.TranslateToTPR(evt.Object, binding, data.BindingKind); err != nil {
-		return ErrNotABinding
+	serviceBinding := new(data.ServiceBinding)
+	if err := data.TranslateToTPR(evt.Object, serviceBinding, data.ServiceBindingKind); err != nil {
+		return ErrNotAServiceBinding
 	}
 
-	binding.Status.State = data.BindingStatePending
-	binding, err := updateFn(binding)
+	serviceBinding.Status.State = data.ServiceBindingStatePending
+	serviceBinding, err := updateFn(serviceBinding)
 	if err != nil {
-		logger.Errorf("error updating binding state to %s", binding.Status.State)
+		logger.Errorf("error updating service binding state to %s", serviceBinding.Status.State)
 		return err
 	}
 
-	serviceBroker, serviceClass, serviceInstance, err := refs.GetDependenciesForBinding(
-		binding,
+	serviceBroker, serviceClass, serviceInstance, err := refs.GetDependenciesForServiceBinding(
+		serviceBinding,
 		getSvcBrokerFn,
 		getSvcClassFn,
 		getSvcInstanceFn,
 	)
 	if err != nil {
-		logger.Errorf("getting binding %s's dependencies (%s)", binding.Spec.ID, err)
+		logger.Errorf("getting service binding %s's dependencies (%s)", serviceBinding.Spec.ID, err)
 		return err
 	}
 
@@ -107,10 +107,10 @@ func handleAddBinding(
 		InstanceID: serviceInstance.Spec.ID,
 		ServiceID:  serviceClass.ID,
 		PlanID:     serviceInstance.Spec.PlanID,
-		BindingID:  binding.Spec.ID,
-		Parameters: binding.Spec.Parameters,
+		BindingID:  serviceBinding.Spec.ID,
+		Parameters: serviceBinding.Spec.Parameters,
 	}
-	logger.Debugf("issuing binding request %+v", *bindReq)
+	logger.Debugf("issuing bind request %+v", *bindReq)
 	bindResp, err := binder.Bind(ctx, serviceBroker.Spec, bindReq)
 	if err != nil {
 		logger.Errorf("calling bind operation (%s)", err)
@@ -122,20 +122,20 @@ func handleAddBinding(
 			Kind: "Secret",
 		},
 		ObjectMeta: apiv1.ObjectMeta{
-			Name:      binding.Spec.SecretName,
-			Namespace: binding.Namespace,
+			Name:      serviceBinding.Spec.SecretName,
+			Namespace: serviceBinding.Namespace,
 		},
 		Data: bindResponseCredsToSecretData(bindResp.Creds),
 	}
 
 	if _, err := secretWriter(secret); err != nil {
-		logger.Errorf("writing secret %s (%s)", binding.Spec.SecretName, err)
+		logger.Errorf("writing secret %s (%s)", serviceBinding.Spec.SecretName, err)
 		return err
 	}
 
-	binding.Status.State = data.BindingStateBound
-	if _, err := updateFn(binding); err != nil {
-		logger.Errorf("error updating binding state to %s", binding.Status.State)
+	serviceBinding.Status.State = data.ServiceBindingStateBound
+	if _, err := updateFn(serviceBinding); err != nil {
+		logger.Errorf("error updating service binding state to %s", serviceBinding.Status.State)
 		return err
 	}
 
