@@ -4,9 +4,9 @@ import (
 	"github.com/deis/steward-framework/k8s/data"
 )
 
-// GetDependenciesForInstance fetches the entire reference tree for inst
-func GetDependenciesForInstance(
-	inst *data.Instance,
+// GetDependenciesForServiceInstance fetches the entire reference tree for inst
+func GetDependenciesForServiceInstance(
+	inst *data.ServiceInstance,
 	getServiceBroker ServiceBrokerGetterFunc,
 	getServiceClass ServiceClassGetterFunc,
 ) (*data.ServiceBroker, *data.ServiceClass, error) {
@@ -26,13 +26,13 @@ func GetDependenciesForBinding(
 	binding *data.Binding,
 	getServiceBroker ServiceBrokerGetterFunc,
 	getServiceClass ServiceClassGetterFunc,
-	getInstance InstanceGetterFunc,
-) (*data.ServiceBroker, *data.ServiceClass, *data.Instance, error) {
-	inst, err := getInstance(binding.Spec.InstanceRef)
+	getServiceInstance ServiceInstanceGetterFunc,
+) (*data.ServiceBroker, *data.ServiceClass, *data.ServiceInstance, error) {
+	inst, err := getServiceInstance(binding.Spec.ServiceInstanceRef)
 	if err != nil {
 		return nil, nil, nil, err
 	}
-	serviceBroker, sClass, err := GetDependenciesForInstance(inst, getServiceBroker, getServiceClass)
+	serviceBroker, sClass, err := GetDependenciesForServiceInstance(inst, getServiceBroker, getServiceClass)
 	if err != nil {
 		return nil, nil, nil, err
 	}

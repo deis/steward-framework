@@ -1,4 +1,4 @@
-package instance
+package serviceinstance
 
 import (
 	"context"
@@ -11,16 +11,17 @@ import (
 )
 
 var (
-	ErrCancelled     = errors.New("stopped")
-	ErrNotAnInstance = errors.New("not an instance")
-	ErrWatchClosed   = errors.New("watch closed")
+	ErrCancelled           = errors.New("stopped")
+	ErrNotAServiceInstance = errors.New("not an service instance")
+	ErrWatchClosed         = errors.New("watch closed")
 )
 
-// RunLoop starts a blocking control loop that watches and takes action on instance resources
+// RunLoop starts a blocking control loop that watches and takes action on service instance
+// resources
 func RunLoop(
 	ctx context.Context,
-	watchFn WatchInstanceFunc,
-	updateFn UpdateInstanceFunc,
+	watchFn WatchServiceInstanceFunc,
+	updateFn UpdateServiceInstanceFunc,
 	getServiceClassFn refs.ServiceClassGetterFunc,
 	getServiceBrokerFn refs.ServiceBrokerGetterFunc,
 	lifecycler framework.Lifecycler,
@@ -39,13 +40,13 @@ func RunLoop(
 			return ErrCancelled
 		case evt, open := <-ch:
 			if !open {
-				logger.Errorf("instance loop watch channel was closed")
+				logger.Errorf("service instance loop watch channel was closed")
 				return ErrWatchClosed
 			}
-			logger.Debugf("instance loop received event")
+			logger.Debugf("service instance loop received event")
 			switch evt.Type {
 			case watch.Added:
-				if err := handleAddInstance(
+				if err := handleAddServiceInstance(
 					ctx,
 					lifecycler,
 					updateFn,
@@ -55,10 +56,10 @@ func RunLoop(
 				); err != nil {
 					// TODO: try the handler again.
 					// See https://github.com/deis/steward-framework/issues/26
-					logger.Errorf("add instance event handler failed (%s)", err)
+					logger.Errorf("add service instance event handler failed (%s)", err)
 				}
 			case watch.Deleted:
-				if err := handleDeleteInstance(
+				if err := handleDeleteServiceInstance(
 					ctx,
 					lifecycler,
 					getServiceClassFn,
@@ -67,35 +68,35 @@ func RunLoop(
 				); err != nil {
 					// TODO: try the handler again.
 					// See https://github.com/deis/steward-framework/issues/26
-					logger.Errorf("delete instance event handler failed (%s)", err)
+					logger.Errorf("delete service instance event handler failed (%s)", err)
 				}
 			}
 		}
 	}
 }
 
-func handleAddInstance(
+func handleAddServiceInstance(
 	ctx context.Context,
 	lifecycler framework.Lifecycler,
-	updateFn UpdateInstanceFunc,
+	updateFn UpdateServiceInstanceFunc,
 	getServiceClassFn refs.ServiceClassGetterFunc,
 	getServiceBrokerFn refs.ServiceBrokerGetterFunc,
 	evt watch.Event,
 ) error {
 
-	instance := new(data.Instance)
-	if err := data.TranslateToTPR(evt.Object, instance, data.InstanceKind); err != nil {
-		return ErrNotAnInstance
+	serviceInstance := new(data.ServiceInstance)
+	if err := data.TranslateToTPR(evt.Object, serviceInstance, data.ServiceInstanceKind); err != nil {
+		return ErrNotAServiceInstance
 	}
-	instance.Status.Status = data.InstanceStatePending
-	instance, err := updateFn(instance)
+	serviceInstance.Status.Status = data.ServiceInstanceStatePending
+	serviceInstance, err := updateFn(serviceInstance)
 	if err != nil {
 		return err
 	}
-	sc, err := getServiceClassFn(instance.Spec.ServiceClassRef)
+	sc, err := getServiceClassFn(serviceInstance.Spec.ServiceClassRef)
 	if err != nil {
-		scNamespace := instance.Spec.ServiceClassRef.Namespace
-		scName := instance.Spec.ServiceClassRef.Name
+		scNamespace := serviceInstance.Spec.ServiceClassRef.Namespace
+		scName := serviceInstance.Spec.ServiceClassRef.Name
 		logger.Errorf("couldn't find service class %s/%s", scNamespace, scName)
 		return err
 	}
@@ -107,17 +108,17 @@ func handleAddInstance(
 		return err
 	}
 	req := &framework.ProvisionRequest{
-		InstanceID:        instance.Spec.ID,
+		InstanceID:        serviceInstance.Spec.ID,
 		ServiceID:         sc.ID,
-		PlanID:            instance.Spec.PlanID,
+		PlanID:            serviceInstance.Spec.PlanID,
 		AcceptsIncomplete: false,
-		Parameters:        instance.Spec.Parameters,
+		Parameters:        serviceInstance.Spec.Parameters,
 	}
-	finalInstanceState := data.InstanceStateFailed
+	finalServiceInstanceState := data.ServiceInstanceStateFailed
 	defer func() {
-		instance.Status.Status = finalInstanceState
-		if _, err = updateFn(instance); err != nil {
-			logger.Errorf("failed to update instance to final state %s (%s)", finalInstanceState, err)
+		serviceInstance.Status.Status = finalServiceInstanceState
+		if _, err = updateFn(serviceInstance); err != nil {
+			logger.Errorf("failed to update service instance to final state %s (%s)", finalServiceInstanceState, err)
 		}
 	}()
 	logger.Debugf("issuing provisioning request %+v", *req)
@@ -127,22 +128,22 @@ func handleAddInstance(
 	}
 	// TODO: Wait for async provision completion.
 	// See https://github.com/deis/steward-framework/issues/39
-	finalInstanceState = data.InstanceStateProvisioned
+	finalServiceInstanceState = data.ServiceInstanceStateProvisioned
 	return nil
 }
 
-func handleDeleteInstance(
+func handleDeleteServiceInstance(
 	ctx context.Context,
 	lifecycler framework.Lifecycler,
 	getServiceClassFn refs.ServiceClassGetterFunc,
 	getServiceBrokerFn refs.ServiceBrokerGetterFunc,
 	evt watch.Event,
 ) error {
-	instance, ok := evt.Object.(*data.Instance)
+	serviceInstance, ok := evt.Object.(*data.ServiceInstance)
 	if !ok {
-		return ErrNotAnInstance
+		return ErrNotAServiceInstance
 	}
-	sc, err := getServiceClassFn(instance.Spec.ServiceClassRef)
+	sc, err := getServiceClassFn(serviceInstance.Spec.ServiceClassRef)
 	if err != nil {
 		return err
 	}
@@ -151,11 +152,11 @@ func handleDeleteInstance(
 		return err
 	}
 	req := &framework.DeprovisionRequest{
-		InstanceID:        instance.Spec.ID,
+		InstanceID:        serviceInstance.Spec.ID,
 		ServiceID:         sc.ID,
-		PlanID:            instance.Spec.PlanID,
+		PlanID:            serviceInstance.Spec.PlanID,
 		AcceptsIncomplete: false,
-		Parameters:        instance.Spec.Parameters,
+		Parameters:        serviceInstance.Spec.Parameters,
 	}
 	_, err = lifecycler.Deprovision(ctx, b.Spec, req)
 	if err != nil {

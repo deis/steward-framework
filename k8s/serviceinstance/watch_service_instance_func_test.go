@@ -1,10 +1,10 @@
-package instance
+package serviceinstance
 
 import (
 	"k8s.io/client-go/pkg/watch"
 )
 
-func newFakeWatchInstanceFunc(retErr error) (WatchInstanceFunc, *watch.FakeWatcher) {
+func newFakeWatchServiceInstanceFunc(retErr error) (WatchServiceInstanceFunc, *watch.FakeWatcher) {
 	fake := watch.NewFake()
 	fn := func(string) (watch.Interface, error) {
 		if retErr != nil {

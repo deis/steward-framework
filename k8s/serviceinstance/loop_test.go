@@ -1,4 +1,4 @@
-package instance
+package serviceinstance
 
 import (
 	"context"
@@ -16,21 +16,21 @@ import (
 func TestRunLoopCancel(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel()
-	watcher, fakeWatcher := newFakeWatchInstanceFunc(nil)
-	updater, updated := newFakeUpdateInstanceFunc(nil)
+	watcher, fakeWatcher := newFakeWatchServiceInstanceFunc(nil)
+	updater, updated := newFakeUpdateServiceInstanceFunc(nil)
 	getServiceClassFn := refs.NewFakeServiceClassGetterFunc(&data.ServiceClass{}, nil)
 	getServiceBrokerFn := refs.NewFakeServiceBrokerGetterFunc(&data.ServiceBroker{}, nil)
 	lifecycler := &fake.Lifecycler{}
 	assert.Err(t, ErrCancelled, RunLoop(ctx, watcher, updater, getServiceClassFn, getServiceBrokerFn, lifecycler))
 	assert.True(t, fakeWatcher.IsStopped(), "watcher isn't stopped")
-	assert.Equal(t, len(*updated), 0, "number of updated instances")
+	assert.Equal(t, len(*updated), 0, "number of updated service instances")
 }
 
 func TestRunLoopAddSuccess(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	watcher, fakeWatcher := newFakeWatchInstanceFunc(nil)
-	updater, updated := newFakeUpdateInstanceFunc(nil)
+	watcher, fakeWatcher := newFakeWatchServiceInstanceFunc(nil)
+	updater, updated := newFakeUpdateServiceInstanceFunc(nil)
 	getServiceClassFn := refs.NewFakeServiceClassGetterFunc(&data.ServiceClass{}, nil)
 	getServiceBrokerFn := refs.NewFakeServiceBrokerGetterFunc(&data.ServiceBroker{}, nil)
 	provisioner := &fake.Provisioner{}
@@ -43,8 +43,8 @@ func TestRunLoopAddSuccess(t *testing.T) {
 		errCh <- RunLoop(ctx, watcher, updater, getServiceClassFn, getServiceBrokerFn, lifecycler)
 	}()
 
-	inst := new(data.Instance)
-	inst.Kind = data.InstanceKind
+	inst := new(data.ServiceInstance)
+	inst.Kind = data.ServiceInstanceKind
 	fakeWatcher.Add(inst)
 	fakeWatcher.Stop()
 
@@ -52,7 +52,7 @@ func TestRunLoopAddSuccess(t *testing.T) {
 	select {
 	case err := <-errCh:
 		assert.Equal(t, len(provisioner.Reqs), 1, "number of provision requests")
-		assert.Equal(t, len(*updated), 2, "number of updated instances")
+		assert.Equal(t, len(*updated), 2, "number of updated service instances")
 		assert.Err(t, ErrWatchClosed, err)
 	case <-time.After(errTimeout):
 		t.Fatalf("RunLoop didn't return after %s", errTimeout)
@@ -63,8 +63,8 @@ func TestRunLoopAddSuccess(t *testing.T) {
 func TestRunLoopDeleteSuccess(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	watcher, fakeWatcher := newFakeWatchInstanceFunc(nil)
-	updater, updated := newFakeUpdateInstanceFunc(nil)
+	watcher, fakeWatcher := newFakeWatchServiceInstanceFunc(nil)
+	updater, updated := newFakeUpdateServiceInstanceFunc(nil)
 	getServiceClassFn := refs.NewFakeServiceClassGetterFunc(&data.ServiceClass{}, nil)
 	getServiceBrokerFn := refs.NewFakeServiceBrokerGetterFunc(&data.ServiceBroker{}, nil)
 	deprovisioner := &fake.Deprovisioner{}
@@ -77,14 +77,14 @@ func TestRunLoopDeleteSuccess(t *testing.T) {
 		errCh <- RunLoop(ctx, watcher, updater, getServiceClassFn, getServiceBrokerFn, lifecycler)
 	}()
 
-	fakeWatcher.Delete(&data.Instance{})
+	fakeWatcher.Delete(&data.ServiceInstance{})
 	fakeWatcher.Stop()
 
 	const errTimeout = 100 * time.Millisecond
 	select {
 	case err := <-errCh:
 		assert.Equal(t, len(deprovisioner.Reqs), 1, "number of deprovision requests")
-		assert.Equal(t, len(*updated), 0, "number of updated instances")
+		assert.Equal(t, len(*updated), 0, "number of updated service instances")
 		assert.Err(t, ErrWatchClosed, err)
 	case <-time.After(errTimeout):
 		t.Fatalf("RunLoop didn't return after %s", errTimeout)
@@ -92,9 +92,9 @@ func TestRunLoopDeleteSuccess(t *testing.T) {
 
 }
 
-func TestHandleAddInstanceNotAnInstance(t *testing.T) {
+func TestHandleAddServiceInstanceNotAServiceInstance(t *testing.T) {
 	ctx := context.Background()
-	updater, updated := newFakeUpdateInstanceFunc(nil)
+	updater, updated := newFakeUpdateServiceInstanceFunc(nil)
 	getServiceClassFn := refs.NewFakeServiceClassGetterFunc(&data.ServiceClass{}, nil)
 	getServiceBrokerFn := refs.NewFakeServiceBrokerGetterFunc(&data.ServiceBroker{}, nil)
 	provisioner := &fake.Provisioner{}
@@ -105,34 +105,34 @@ func TestHandleAddInstanceNotAnInstance(t *testing.T) {
 		Type:   watch.Added,
 		Object: &api.Pod{},
 	}
-	err := handleAddInstance(ctx, lifecycler, updater, getServiceClassFn, getServiceBrokerFn, evt)
-	assert.Err(t, ErrNotAnInstance, err)
+	err := handleAddServiceInstance(ctx, lifecycler, updater, getServiceClassFn, getServiceBrokerFn, evt)
+	assert.Err(t, ErrNotAServiceInstance, err)
 	assert.Equal(t, len(provisioner.Reqs), 0, "number of provision requests")
-	assert.Equal(t, len(*updated), 0, "number of updated instances")
+	assert.Equal(t, len(*updated), 0, "number of updated service instances")
 }
 
-func TestHandleAddInstanceSuccess(t *testing.T) {
+func TestHandleAddServiceInstanceSuccess(t *testing.T) {
 	ctx := context.Background()
-	updater, updated := newFakeUpdateInstanceFunc(nil)
+	updater, updated := newFakeUpdateServiceInstanceFunc(nil)
 	getServiceClassFn := refs.NewFakeServiceClassGetterFunc(&data.ServiceClass{}, nil)
 	getServiceBrokerFn := refs.NewFakeServiceBrokerGetterFunc(&data.ServiceBroker{}, nil)
 	provisioner := &fake.Provisioner{}
 	lifecycler := &fake.Lifecycler{
 		Provisioner: provisioner,
 	}
-	inst := new(data.Instance)
-	inst.Kind = data.InstanceKind
+	inst := new(data.ServiceInstance)
+	inst.Kind = data.ServiceInstanceKind
 	evt := watch.Event{
 		Type:   watch.Added,
 		Object: inst,
 	}
-	err := handleAddInstance(ctx, lifecycler, updater, getServiceClassFn, getServiceBrokerFn, evt)
+	err := handleAddServiceInstance(ctx, lifecycler, updater, getServiceClassFn, getServiceBrokerFn, evt)
 	assert.NoErr(t, err)
 	assert.Equal(t, len(provisioner.Reqs), 1, "number of provision requests")
-	assert.Equal(t, len(*updated), 2, "number of updated instances")
+	assert.Equal(t, len(*updated), 2, "number of updated service instances")
 }
 
-func TestHandleDeleteInstanceNotAnInstance(t *testing.T) {
+func TestHandleDeleteServiceInstanceNotAServiceInstance(t *testing.T) {
 	ctx := context.Background()
 	getServiceClassFn := refs.NewFakeServiceClassGetterFunc(&data.ServiceClass{}, nil)
 	getServiceBrokerFn := refs.NewFakeServiceBrokerGetterFunc(&data.ServiceBroker{}, nil)
@@ -144,12 +144,12 @@ func TestHandleDeleteInstanceNotAnInstance(t *testing.T) {
 		Type:   watch.Deleted,
 		Object: &api.Pod{},
 	}
-	err := handleDeleteInstance(ctx, lifecycler, getServiceClassFn, getServiceBrokerFn, evt)
-	assert.Err(t, ErrNotAnInstance, err)
+	err := handleDeleteServiceInstance(ctx, lifecycler, getServiceClassFn, getServiceBrokerFn, evt)
+	assert.Err(t, ErrNotAServiceInstance, err)
 	assert.Equal(t, len(deprovisioner.Reqs), 0, "number of deprovision requests")
 }
 
-func TestHandleDeleteInstanceSuccess(t *testing.T) {
+func TestHandleDeleteServiceInstanceSuccess(t *testing.T) {
 	ctx := context.Background()
 	getServiceClassFn := refs.NewFakeServiceClassGetterFunc(&data.ServiceClass{}, nil)
 	getServiceBrokerFn := refs.NewFakeServiceBrokerGetterFunc(&data.ServiceBroker{}, nil)
@@ -159,9 +159,9 @@ func TestHandleDeleteInstanceSuccess(t *testing.T) {
 	}
 	evt := watch.Event{
 		Type:   watch.Deleted,
-		Object: &data.Instance{},
+		Object: &data.ServiceInstance{},
 	}
-	err := handleDeleteInstance(ctx, lifecycler, getServiceClassFn, getServiceBrokerFn, evt)
+	err := handleDeleteServiceInstance(ctx, lifecycler, getServiceClassFn, getServiceBrokerFn, evt)
 	assert.NoErr(t, err)
 	assert.Equal(t, len(deprovisioner.Reqs), 1, "number of deprovision requests")
 }

@@ -30,7 +30,7 @@ func RunLoop(
 	updateFn UpdateBindingFunc,
 	getSvcBrokerFn refs.ServiceBrokerGetterFunc,
 	getSvcClassFn refs.ServiceClassGetterFunc,
-	getInstanceFn refs.InstanceGetterFunc,
+	getSvcInstanceFn refs.ServiceInstanceGetterFunc,
 ) error {
 
 	watcher, err := fn(namespace)
@@ -58,7 +58,7 @@ func RunLoop(
 					secretWriter,
 					getSvcBrokerFn,
 					getSvcClassFn,
-					getInstanceFn,
+					getSvcInstanceFn,
 					evt,
 				); err != nil {
 					// TODO: try the handler again. See https://github.com/deis/steward-framework/issues/34
@@ -76,7 +76,7 @@ func handleAddBinding(
 	secretWriter SecretWriterFunc,
 	getSvcBrokerFn refs.ServiceBrokerGetterFunc,
 	getSvcClassFn refs.ServiceClassGetterFunc,
-	getInstanceFn refs.InstanceGetterFunc,
+	getSvcInstanceFn refs.ServiceInstanceGetterFunc,
 	evt watch.Event,
 ) error {
 
@@ -92,11 +92,11 @@ func handleAddBinding(
 		return err
 	}
 
-	serviceBroker, serviceClass, instance, err := refs.GetDependenciesForBinding(
+	serviceBroker, serviceClass, serviceInstance, err := refs.GetDependenciesForBinding(
 		binding,
 		getSvcBrokerFn,
 		getSvcClassFn,
-		getInstanceFn,
+		getSvcInstanceFn,
 	)
 	if err != nil {
 		logger.Errorf("getting binding %s's dependencies (%s)", binding.Spec.ID, err)
@@ -104,9 +104,9 @@ func handleAddBinding(
 	}
 
 	bindReq := &framework.BindRequest{
-		InstanceID: instance.Spec.ID,
+		InstanceID: serviceInstance.Spec.ID,
 		ServiceID:  serviceClass.ID,
-		PlanID:     instance.Spec.PlanID,
+		PlanID:     serviceInstance.Spec.PlanID,
 		BindingID:  binding.Spec.ID,
 		Parameters: binding.Spec.Parameters,
 	}

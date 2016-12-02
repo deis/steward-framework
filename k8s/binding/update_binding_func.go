@@ -5,7 +5,7 @@ import (
 	"k8s.io/client-go/dynamic"
 )
 
-// UpdateBindingFunc is the function that can update an instance
+// UpdateBindingFunc is the function that can update a binding
 type UpdateBindingFunc func(*data.Binding) (*data.Binding, error)
 
 // NewK8sUpdateBindingFunc returns an UpdateBindingFunc backed by a Kubernetes client

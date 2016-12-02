@@ -31,7 +31,7 @@ func TestRunLoopCancel(t *testing.T) {
 		updateBindingFn,
 		refs.NewFakeServiceBrokerGetterFunc(nil, nil),
 		refs.NewFakeServiceClassGetterFunc(nil, nil),
-		refs.NewFakeInstanceGetterFunc(nil, nil),
+		refs.NewFakeServiceInstanceGetterFunc(nil, nil),
 	))
 	assert.Equal(t, len(binder.Reqs), 0, "number of bind calls")
 	assert.True(t, fakeWatcher.IsStopped(), "watcher was not stopped")
@@ -53,7 +53,7 @@ func TestRunLoopSuccess(t *testing.T) {
 	}
 	svcBrokerGetterFn := refs.NewFakeServiceBrokerGetterFunc(&data.ServiceBroker{}, nil)
 	svcClassGetterFn := refs.NewFakeServiceClassGetterFunc(&data.ServiceClass{}, nil)
-	instanceGetterFn := refs.NewFakeInstanceGetterFunc(&data.Instance{}, nil)
+	svcInstanceGetterFn := refs.NewFakeServiceInstanceGetterFunc(&data.ServiceInstance{}, nil)
 
 	errCh := make(chan error)
 	go func() {
@@ -66,7 +66,7 @@ func TestRunLoopSuccess(t *testing.T) {
 			updateBindingFn,
 			svcBrokerGetterFn,
 			svcClassGetterFn,
-			instanceGetterFn,
+			svcInstanceGetterFn,
 		)
 	}()
 	binding := new(data.Binding)
@@ -102,7 +102,7 @@ func TestHandleAddBindingNotABinding(t *testing.T) {
 		nil, // SecretWriterFunc
 		nil, // refs.ServiceBrokerGetterFunc
 		nil, // refs.ServiceClassGetterFunc
-		nil, // refs.InstanceGetterFunc
+		nil, // refs.ServiceInstanceGetterFunc
 		evt,
 	)
 	assert.Err(t, ErrNotABinding, err)
@@ -115,7 +115,7 @@ func TestHandleAddBindingSuccess(t *testing.T) {
 	secretWriterFn, writtenSecrets := newFakeSecretWriterFunc(nil)
 	serviceBrokerGetterFn := refs.NewFakeServiceBrokerGetterFunc(&data.ServiceBroker{}, nil)
 	svcClassGetterFn := refs.NewFakeServiceClassGetterFunc(&data.ServiceClass{}, nil)
-	instanceGetterFn := refs.NewFakeInstanceGetterFunc(&data.Instance{}, nil)
+	svcInstanceGetterFn := refs.NewFakeServiceInstanceGetterFunc(&data.ServiceInstance{}, nil)
 	binding := new(data.Binding)
 	binding.Kind = data.BindingKind
 	evt := watch.Event{
@@ -130,7 +130,7 @@ func TestHandleAddBindingSuccess(t *testing.T) {
 		secretWriterFn,
 		serviceBrokerGetterFn,
 		svcClassGetterFn,
-		instanceGetterFn,
+		svcInstanceGetterFn,
 		evt,
 	)
 

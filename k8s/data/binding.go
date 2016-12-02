@@ -39,10 +39,10 @@ type Binding struct {
 }
 
 type BindingSpec struct {
-	ID          string              `json:"id"`
-	InstanceRef api.ObjectReference `json:"instance_ref"`
-	Parameters  lib.JSONObject      `json:"parameters"`
-	SecretName  string              `json:"secret_name"`
+	ID                 string              `json:"id"`
+	ServiceInstanceRef api.ObjectReference `json:"service_instance_ref"`
+	Parameters         lib.JSONObject      `json:"parameters"`
+	SecretName         string              `json:"secret_name"`
 }
 
 type BindingStatus struct {

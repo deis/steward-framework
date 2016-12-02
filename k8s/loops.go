@@ -5,15 +5,16 @@ import (
 
 	"github.com/deis/steward-framework"
 	"github.com/deis/steward-framework/k8s/binding"
-	"github.com/deis/steward-framework/k8s/instance"
 	"github.com/deis/steward-framework/k8s/refs"
 	"github.com/deis/steward-framework/k8s/servicebroker"
+	"github.com/deis/steward-framework/k8s/serviceinstance"
 	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/kubernetes"
 )
 
 // StartControlLoops is a convenience function that initiates all of Steward's individual control
-// loops, of which there is one per relevant resource type-- ServiceBroker, Instance, and Binding.
+// loops, of which there is one per relevant resource type-- ServiceBroker, ServiceInstance, and
+// Binding.
 //
 // In order to stop all loops, pass a cancellable context to this function and call its cancel
 // function.
@@ -45,17 +46,17 @@ func StartControlLoops(
 		}
 	}()
 
-	// Start instance loop
+	// Start service instance loop
 	go func() {
-		if err := instance.RunLoop(
+		if err := serviceinstance.RunLoop(
 			ctx,
-			instance.NewK8sWatchInstanceFunc(dynamicCl),
-			instance.NewK8sUpdateInstanceFunc(dynamicCl),
+			serviceinstance.NewK8sWatchServiceInstanceFunc(dynamicCl),
+			serviceinstance.NewK8sUpdateServiceInstanceFunc(dynamicCl),
 			refs.NewK8sServiceClassGetterFunc(dynamicCl),
 			refs.NewK8sServiceBrokerGetterFunc(dynamicCl),
 			lifecycler,
 		); err != nil {
-			logger.Errorf("instance loop (%s)", err)
+			logger.Errorf("service instance loop (%s)", err)
 			errCh <- err
 		}
 	}()
@@ -67,7 +68,7 @@ func StartControlLoops(
 
 		serviceBrokerGetterFn := refs.NewK8sServiceBrokerGetterFunc(dynamicCl)
 		svcClassGetterFn := refs.NewK8sServiceClassGetterFunc(dynamicCl)
-		instanceGetterFn := refs.NewK8sInstanceGetterFunc(dynamicCl)
+		svcInstanceGetterFn := refs.NewK8sServiceInstanceGetterFunc(dynamicCl)
 
 		// TODO: remove the hard-coded "default" namespace and instead watch all namespaces and be able
 		// to create secrets in any given namespace.
@@ -84,7 +85,7 @@ func StartControlLoops(
 			updateBindingFn,
 			serviceBrokerGetterFn,
 			svcClassGetterFn,
-			instanceGetterFn,
+			svcInstanceGetterFn,
 		); err != nil {
 			logger.Errorf("binding loop (%s)", err)
 			errCh <- err

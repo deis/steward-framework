@@ -1,4 +1,4 @@
-package instance
+package serviceinstance
 
 import (
 	"github.com/juju/loggo"
