@@ -6,9 +6,9 @@ The framework utilizes inversion of control, implementing all the core concerns 
 
 The framework implements all of the following concerns:
 
-* __Service catalog publishing:__ The framework publishes `servicecatalogentries` that reflect a backing broker's offerings into the Kubernetes cluster. The query for the backing broker's offerings is delegated to the backing broker through the client library's implementation of the `framework.Cataloger` interface.
+* __Service catalog publishing:__ The framework publishes `servicecatalogentries` that reflect a backing service broker's offerings into the Kubernetes cluster. The query for the backing service broker's offerings is delegated to the backing service broker through the client library's implementation of the `framework.Cataloger` interface.
 
-* __Event and control loops:__ The framework watches the Kubernetes event stream for changes to `ServicePlanClaims`. Events that trigger discreet provision, bind, unbind, or deprovision actions delegate those operations to the backing broker through the client library's implementation of the `framework.Lifecycler` interface.
+* __Event and control loops:__ The framework watches the Kubernetes event stream for changes to `ServicePlanClaims`. Events that trigger discreet provision, bind, unbind, or deprovision actions delegate those operations to the backing service broker through the client library's implementation of the `framework.Lifecycler` interface.
 
 * __API server__: At this time, the API server implements only a health-check endpoint at `/healthz`.
 
@@ -25,7 +25,7 @@ Utilizing the Steward Framework to implement your own service catalog controller
 
       List(
         ctx context.Context,
-        brokerSpec framework.BrokerSpec,
+        serviceBrokerSpec framework.ServiceBrokerSpec,
       ) ([]*framework.Service, error)
 
     }
@@ -34,31 +34,31 @@ Utilizing the Steward Framework to implement your own service catalog controller
 
       Provision(
         ctx context.Context,
-        brokerSpec framework.BrokerSpec,
+        serviceBrokerSpec framework.ServiceBrokerSpec,
         req *framework.ProvisionRequest,
       ) (*framework.ProvisionResponse, error)
 
       Bind(
         ctx context.Context,
-        brokerSpec framework.BrokerSpec,
+        serviceBrokerSpec framework.ServiceBrokerSpec,
         req *framework.BindRequest,
       ) (*framework.BindResponse, error)
 
       Unbind(
         ctx context.Context,
-        brokerSpec framework.BrokerSpec,
+        serviceBrokerSpec framework.ServiceBrokerSpec,
         req *framework.UnbindRequest,
       ) error
 
       Deprovision(
         ctx context.Context,
-        brokerSpec framework.BrokerSpec,
+        serviceBrokerSpec framework.ServiceBrokerSpec,
         req *framework.DeprovisionRequest,
       ) (*framework.DeprovisionResponse, error)
 
       GetOperationStatus(
         ctx context.Context,
-        brokerSpec framework.BrokerSpec,
+        serviceBrokerSpec framework.ServiceBrokerSpec,
         req *framework.OperationStatusRequest,
       ) (*framework.OperationStatusResponse, error)
 

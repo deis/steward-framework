@@ -1,4 +1,4 @@
-package broker
+package servicebroker
 
 import (
 	"context"
@@ -37,18 +37,18 @@ func fakeCataloger() fake.Cataloger {
 func TestRunLoopCancel(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel()
-	watcher, fakeWatcher := newFakeWatchBrokerFunc(nil)
-	updater, updated := newFakeUpdateBrokerFunc(nil)
+	watcher, fakeWatcher := newFakeWatchServiceBrokerFunc(nil)
+	updater, updated := newFakeUpdateServiceBrokerFunc(nil)
 	assert.Err(t, ErrCancelled, RunLoop(ctx, "testns", watcher, updater, nil, nil))
 	assert.True(t, fakeWatcher.IsStopped(), "watcher isn't stopped")
-	assert.Equal(t, len(*updated), 0, "number of updated brokers")
+	assert.Equal(t, len(*updated), 0, "number of updated service brokers")
 }
 
 func TestRunLoopSuccess(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	watcher, fakeWatcher := newFakeWatchBrokerFunc(nil)
-	updater, updated := newFakeUpdateBrokerFunc(nil)
+	watcher, fakeWatcher := newFakeWatchServiceBrokerFunc(nil)
+	updater, updated := newFakeUpdateServiceBrokerFunc(nil)
 	cataloger := fakeCataloger()
 	createSvcClass, createdSvcClasses := newFakeCreateServiceClassFunc(nil)
 
@@ -57,16 +57,16 @@ func TestRunLoopSuccess(t *testing.T) {
 		errCh <- RunLoop(ctx, "testns", watcher, updater, cataloger, createSvcClass)
 	}()
 
-	broker := new(data.Broker)
-	broker.Kind = data.BrokerKind
-	fakeWatcher.Add(broker)
+	serviceBroker := new(data.ServiceBroker)
+	serviceBroker.Kind = data.ServiceBrokerKind
+	fakeWatcher.Add(serviceBroker)
 	fakeWatcher.Stop()
 
 	const errTimeout = 100 * time.Millisecond
 	select {
 	case err := <-errCh:
 		assert.Equal(t, len(*createdSvcClasses), len(cataloger.Services), "number of created service classes")
-		assert.Equal(t, len(*updated), 2, "number of updated brokers")
+		assert.Equal(t, len(*updated), 2, "number of updated service brokers")
 		assert.Err(t, ErrWatchClosed, err)
 	case <-time.After(errTimeout):
 		t.Fatalf("RunLoop didn't return after %s", errTimeout)
@@ -74,10 +74,10 @@ func TestRunLoopSuccess(t *testing.T) {
 
 }
 
-func TestHandleAddBrokerNotABroker(t *testing.T) {
+func TestHandleAddServiceBrokerNotAServiceBroker(t *testing.T) {
 	ctx := context.Background()
 	cataloger := fake.Cataloger{}
-	updater, updated := newFakeUpdateBrokerFunc(nil)
+	updater, updated := newFakeUpdateServiceBrokerFunc(nil)
 	createSvcClass, createdSvcClasses := newFakeCreateServiceClassFunc(nil)
 	evt := watch.Event{
 		Type: watch.Added,
@@ -85,25 +85,25 @@ func TestHandleAddBrokerNotABroker(t *testing.T) {
 			TypeMeta: unversioned.TypeMeta{Kind: "Pod"},
 		},
 	}
-	err := handleAddBroker(ctx, cataloger, updater, createSvcClass, evt)
-	assert.Err(t, ErrNotABroker, err)
-	assert.Equal(t, len(*createdSvcClasses), 0, "number of create svc classes")
-	assert.Equal(t, len(*updated), 0, "number of updated brokers")
+	err := handleAddServiceBroker(ctx, cataloger, updater, createSvcClass, evt)
+	assert.Err(t, ErrNotAServiceBroker, err)
+	assert.Equal(t, len(*createdSvcClasses), 0, "number of create service classes")
+	assert.Equal(t, len(*updated), 0, "number of updated service brokers")
 }
 
-func TestHandleAddBrokerSuccess(t *testing.T) {
+func TestHandleAddServiceBrokerSuccess(t *testing.T) {
 	ctx := context.Background()
 	cataloger := fakeCataloger()
-	updater, updated := newFakeUpdateBrokerFunc(nil)
+	updater, updated := newFakeUpdateServiceBrokerFunc(nil)
 	createSvcClass, createdSvcClasses := newFakeCreateServiceClassFunc(nil)
-	broker := new(data.Broker)
-	broker.Kind = data.BrokerKind
+	serviceBroker := new(data.ServiceBroker)
+	serviceBroker.Kind = data.ServiceBrokerKind
 	evt := watch.Event{
 		Type:   watch.Added,
-		Object: broker,
+		Object: serviceBroker,
 	}
-	err := handleAddBroker(ctx, cataloger, updater, createSvcClass, evt)
+	err := handleAddServiceBroker(ctx, cataloger, updater, createSvcClass, evt)
 	assert.NoErr(t, err)
 	assert.Equal(t, len(*createdSvcClasses), len(cataloger.Services), "number of create svc classes")
-	assert.Equal(t, len(*updated), 2, "number of updated brokers")
+	assert.Equal(t, len(*updated), 2, "number of updated service brokers")
 }

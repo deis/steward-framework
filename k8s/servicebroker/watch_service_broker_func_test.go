@@ -1,10 +1,10 @@
-package broker
+package servicebroker
 
 import (
 	"k8s.io/client-go/pkg/watch"
 )
 
-func newFakeWatchBrokerFunc(retErr error) (WatchBrokerFunc, *watch.FakeWatcher) {
+func newFakeWatchServiceBrokerFunc(retErr error) (WatchServiceBrokerFunc, *watch.FakeWatcher) {
 	fake := watch.NewFake()
 	fn := func(namespace string) (watch.Interface, error) {
 		if retErr != nil {

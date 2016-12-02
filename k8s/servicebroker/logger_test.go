@@ -1,4 +1,4 @@
-package broker
+package servicebroker
 
 import (
 	"github.com/juju/loggo"

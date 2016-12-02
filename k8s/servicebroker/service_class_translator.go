@@ -1,4 +1,4 @@
-package broker
+package servicebroker
 
 import (
 	"fmt"
@@ -10,31 +10,31 @@ import (
 )
 
 func translateServiceClass(
-	parentBroker *data.Broker,
+	parentServiceBroker *data.ServiceBroker,
 	svc *framework.Service) *data.ServiceClass {
 
-	brokerRef := getObjectReference(parentBroker)
+	serviceBrokerRef := getObjectReference(parentServiceBroker)
 	return &data.ServiceClass{
 		TypeMeta: unversioned.TypeMeta{
 			APIVersion: data.APIVersion,
 			Kind:       data.ServiceClassKind,
 		},
 		ObjectMeta: v1.ObjectMeta{
-			Name:      serviceClassName(parentBroker, svc),
-			Namespace: parentBroker.Namespace,
+			Name:      serviceClassName(parentServiceBroker, svc),
+			Namespace: parentServiceBroker.Namespace,
 		},
-		BrokerRef:     *brokerRef,
-		ID:            svc.ID,
-		BrokerName:    parentBroker.Name,
-		Bindable:      true,
-		Plans:         translatePlans(svc.Plans),
-		PlanUpdatable: svc.PlanUpdatable,
-		Description:   svc.Description,
+		ServiceBrokerRef:  *serviceBrokerRef,
+		ID:                svc.ID,
+		ServiceBrokerName: parentServiceBroker.Name,
+		Bindable:          true,
+		Plans:             translatePlans(svc.Plans),
+		PlanUpdatable:     svc.PlanUpdatable,
+		Description:       svc.Description,
 	}
 }
 
-func serviceClassName(parentBroker *data.Broker, svc *framework.Service) string {
-	return fmt.Sprintf("%s-%s", parentBroker.Name, svc.Name)
+func serviceClassName(parentServiceBroker *data.ServiceBroker, svc *framework.Service) string {
+	return fmt.Sprintf("%s-%s", parentServiceBroker.Name, svc.Name)
 }
 
 func translatePlans(plans []framework.ServicePlan) []data.ServicePlan {

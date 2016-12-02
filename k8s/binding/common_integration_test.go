@@ -35,7 +35,7 @@ func setup() error {
 }
 
 func teardown() error {
-	// This will also delete the broker
+	// This will also delete the serviceBroker
 	if err := k8s.DeleteNamespace(testNamespace); err != nil {
 		return err
 	}

@@ -7,34 +7,34 @@ import (
 // GetDependenciesForInstance fetches the entire reference tree for inst
 func GetDependenciesForInstance(
 	inst *data.Instance,
-	getBroker BrokerGetterFunc,
+	getServiceBroker ServiceBrokerGetterFunc,
 	getServiceClass ServiceClassGetterFunc,
-) (*data.Broker, *data.ServiceClass, error) {
+) (*data.ServiceBroker, *data.ServiceClass, error) {
 	sClass, err := getServiceClass(inst.Spec.ServiceClassRef)
 	if err != nil {
 		return nil, nil, err
 	}
-	broker, err := getBroker(sClass.BrokerRef)
+	serviceBroker, err := getServiceBroker(sClass.ServiceBrokerRef)
 	if err != nil {
 		return nil, nil, err
 	}
-	return broker, sClass, nil
+	return serviceBroker, sClass, nil
 }
 
 // GetDependenciesForBinding fetches the entire reference tree for binding
 func GetDependenciesForBinding(
 	binding *data.Binding,
-	getBroker BrokerGetterFunc,
+	getServiceBroker ServiceBrokerGetterFunc,
 	getServiceClass ServiceClassGetterFunc,
 	getInstance InstanceGetterFunc,
-) (*data.Broker, *data.ServiceClass, *data.Instance, error) {
+) (*data.ServiceBroker, *data.ServiceClass, *data.Instance, error) {
 	inst, err := getInstance(binding.Spec.InstanceRef)
 	if err != nil {
 		return nil, nil, nil, err
 	}
-	broker, sClass, err := GetDependenciesForInstance(inst, getBroker, getServiceClass)
+	serviceBroker, sClass, err := GetDependenciesForInstance(inst, getServiceBroker, getServiceClass)
 	if err != nil {
 		return nil, nil, nil, err
 	}
-	return broker, sClass, inst, nil
+	return serviceBroker, sClass, inst, nil
 }

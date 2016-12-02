@@ -29,7 +29,7 @@ func TestRunLoopCancel(t *testing.T) {
 		secretWriter,
 		watcher,
 		updateBindingFn,
-		refs.NewFakeBrokerGetterFunc(nil, nil),
+		refs.NewFakeServiceBrokerGetterFunc(nil, nil),
 		refs.NewFakeServiceClassGetterFunc(nil, nil),
 		refs.NewFakeInstanceGetterFunc(nil, nil),
 	))
@@ -51,7 +51,7 @@ func TestRunLoopSuccess(t *testing.T) {
 			Creds: map[string]interface{}{"a": "b"},
 		},
 	}
-	brokerGetterFn := refs.NewFakeBrokerGetterFunc(&data.Broker{}, nil)
+	svcBrokerGetterFn := refs.NewFakeServiceBrokerGetterFunc(&data.ServiceBroker{}, nil)
 	svcClassGetterFn := refs.NewFakeServiceClassGetterFunc(&data.ServiceClass{}, nil)
 	instanceGetterFn := refs.NewFakeInstanceGetterFunc(&data.Instance{}, nil)
 
@@ -64,7 +64,7 @@ func TestRunLoopSuccess(t *testing.T) {
 			secretWriter,
 			watcher,
 			updateBindingFn,
-			brokerGetterFn,
+			svcBrokerGetterFn,
 			svcClassGetterFn,
 			instanceGetterFn,
 		)
@@ -100,7 +100,7 @@ func TestHandleAddBindingNotABinding(t *testing.T) {
 		nil, // framework.Binder
 		nil, // UpdateBindingFunc,
 		nil, // SecretWriterFunc
-		nil, // refs.BrokerGetterFunc
+		nil, // refs.ServiceBrokerGetterFunc
 		nil, // refs.ServiceClassGetterFunc
 		nil, // refs.InstanceGetterFunc
 		evt,
@@ -113,7 +113,7 @@ func TestHandleAddBindingSuccess(t *testing.T) {
 	binder := &fake.Binder{Res: &framework.BindResponse{}}
 	updateBindingFn, updatedBindings := newFakeUpdateBindingFunc(nil)
 	secretWriterFn, writtenSecrets := newFakeSecretWriterFunc(nil)
-	brokerGetterFn := refs.NewFakeBrokerGetterFunc(&data.Broker{}, nil)
+	serviceBrokerGetterFn := refs.NewFakeServiceBrokerGetterFunc(&data.ServiceBroker{}, nil)
 	svcClassGetterFn := refs.NewFakeServiceClassGetterFunc(&data.ServiceClass{}, nil)
 	instanceGetterFn := refs.NewFakeInstanceGetterFunc(&data.Instance{}, nil)
 	binding := new(data.Binding)
@@ -128,7 +128,7 @@ func TestHandleAddBindingSuccess(t *testing.T) {
 		binder,
 		updateBindingFn,
 		secretWriterFn,
-		brokerGetterFn,
+		serviceBrokerGetterFn,
 		svcClassGetterFn,
 		instanceGetterFn,
 		evt,

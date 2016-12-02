@@ -5,15 +5,15 @@ import (
 
 	"github.com/deis/steward-framework"
 	"github.com/deis/steward-framework/k8s/binding"
-	"github.com/deis/steward-framework/k8s/broker"
 	"github.com/deis/steward-framework/k8s/instance"
 	"github.com/deis/steward-framework/k8s/refs"
+	"github.com/deis/steward-framework/k8s/servicebroker"
 	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/kubernetes"
 )
 
 // StartControlLoops is a convenience function that initiates all of Steward's individual control
-// loops, of which there is one per relevant resource type-- Broker, Instance, and Binding.
+// loops, of which there is one per relevant resource type-- ServiceBroker, Instance, and Binding.
 //
 // In order to stop all loops, pass a cancellable context to this function and call its cancel
 // function.
@@ -27,20 +27,20 @@ func StartControlLoops(
 	errCh chan<- error,
 ) {
 
-	// Start broker loop
+	// Start service broker loop
 	go func() {
-		updateBrokerFn := broker.NewK8sUpdateBrokerFunc(dynamicCl)
-		watchBrokerFn := broker.NewK8sWatchBrokerFunc(dynamicCl)
-		createSvcClassFn := broker.NewK8sCreateServiceClassFunc(dynamicCl)
-		if err := broker.RunLoop(
+		updateServiceBrokerFn := servicebroker.NewK8sUpdateServiceBrokerFunc(dynamicCl)
+		watchServiceBrokerFn := servicebroker.NewK8sWatchServiceBrokerFunc(dynamicCl)
+		createSvcClassFn := servicebroker.NewK8sCreateServiceClassFunc(dynamicCl)
+		if err := servicebroker.RunLoop(
 			ctx,
 			globalNamespace,
-			watchBrokerFn,
-			updateBrokerFn,
+			watchServiceBrokerFn,
+			updateServiceBrokerFn,
 			cataloger,
 			createSvcClassFn,
 		); err != nil {
-			logger.Errorf("broker loop (%s)", err)
+			logger.Errorf("service broker loop (%s)", err)
 			errCh <- err
 		}
 	}()
@@ -52,7 +52,7 @@ func StartControlLoops(
 			instance.NewK8sWatchInstanceFunc(dynamicCl),
 			instance.NewK8sUpdateInstanceFunc(dynamicCl),
 			refs.NewK8sServiceClassGetterFunc(dynamicCl),
-			refs.NewK8sBrokerGetterFunc(dynamicCl),
+			refs.NewK8sServiceBrokerGetterFunc(dynamicCl),
 			lifecycler,
 		); err != nil {
 			logger.Errorf("instance loop (%s)", err)
@@ -65,7 +65,7 @@ func StartControlLoops(
 		watchBindingFn := binding.NewK8sWatchBindingFunc(dynamicCl)
 		updateBindingFn := binding.NewK8sUpdateBindingFunc(dynamicCl)
 
-		brokerGetterFn := refs.NewK8sBrokerGetterFunc(dynamicCl)
+		serviceBrokerGetterFn := refs.NewK8sServiceBrokerGetterFunc(dynamicCl)
 		svcClassGetterFn := refs.NewK8sServiceClassGetterFunc(dynamicCl)
 		instanceGetterFn := refs.NewK8sInstanceGetterFunc(dynamicCl)
 
@@ -82,7 +82,7 @@ func StartControlLoops(
 			secretWriterFunc,
 			watchBindingFn,
 			updateBindingFn,
-			brokerGetterFn,
+			serviceBrokerGetterFn,
 			svcClassGetterFn,
 			instanceGetterFn,
 		); err != nil {

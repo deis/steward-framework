@@ -1,4 +1,4 @@
-package broker
+package servicebroker
 
 import (
 	"fmt"
@@ -12,7 +12,7 @@ import (
 )
 
 func TestTranslateServiceClass(t *testing.T) {
-	parentBroker := &data.Broker{
+	parentServiceBroker := &data.ServiceBroker{
 		TypeMeta: unversioned.TypeMeta{},
 		ObjectMeta: v1.ObjectMeta{
 			Name:      "testName",
@@ -22,23 +22,23 @@ func TestTranslateServiceClass(t *testing.T) {
 	svc := &framework.Service{
 		ServiceInfo: framework.ServiceInfo{ID: "testid"},
 	}
-	sClass := translateServiceClass(parentBroker, svc)
+	sClass := translateServiceClass(parentServiceBroker, svc)
 	assert.Equal(t, sClass.Kind, data.ServiceClassKind, "kind")
-	assert.Equal(t, sClass.Name, serviceClassName(parentBroker, svc), "name")
+	assert.Equal(t, sClass.Name, serviceClassName(parentServiceBroker, svc), "name")
 	assert.Equal(t, sClass.ID, svc.ID, "ID")
-	assert.Equal(t, sClass.Namespace, parentBroker.Namespace, "namespace")
+	assert.Equal(t, sClass.Namespace, parentServiceBroker.Namespace, "namespace")
 	assert.Equal(t, len(sClass.Plans), len(svc.Plans), "number of plans")
 }
 
 func TestServiceClassName(t *testing.T) {
-	broker := &data.Broker{
-		ObjectMeta: v1.ObjectMeta{Name: "testBroker"},
+	serviceBroker := &data.ServiceBroker{
+		ObjectMeta: v1.ObjectMeta{Name: "testServiceBroker"},
 	}
 	svc := &framework.Service{
 		ServiceInfo: framework.ServiceInfo{Name: "testSvc"},
 	}
-	name := serviceClassName(broker, svc)
-	assert.Equal(t, name, fmt.Sprintf("%s-%s", broker.Name, svc.Name), "service class name")
+	name := serviceClassName(serviceBroker, svc)
+	assert.Equal(t, name, fmt.Sprintf("%s-%s", serviceBroker.Name, svc.Name), "service class name")
 }
 
 func TestTranslatePlans(t *testing.T) {

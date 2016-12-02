@@ -24,9 +24,9 @@ func ServiceClassAPIResource() *unversioned.APIResource {
 type ServiceClass struct {
 	unversioned.TypeMeta `json:",inline"`
 	v1.ObjectMeta        `json:"metadata,omitempty"`
-	BrokerRef            api.ObjectReference `json:"broker_ref"`
+	ServiceBrokerRef     api.ObjectReference `json:"service_broker_ref"`
 	ID                   string              `json:"id"`
-	BrokerName           string              `json:"broker_name"`
+	ServiceBrokerName    string              `json:"service_broker_name"`
 	Bindable             bool                `json:"bindable"`
 	Plans                []ServicePlan       `json:"plans"`
 	PlanUpdatable        bool                `json:"updatable"`

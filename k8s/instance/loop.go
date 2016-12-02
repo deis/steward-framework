@@ -22,7 +22,7 @@ func RunLoop(
 	watchFn WatchInstanceFunc,
 	updateFn UpdateInstanceFunc,
 	getServiceClassFn refs.ServiceClassGetterFunc,
-	getBrokerFn refs.BrokerGetterFunc,
+	getServiceBrokerFn refs.ServiceBrokerGetterFunc,
 	lifecycler framework.Lifecycler,
 ) error {
 	// TODO: We should watch ALL namespaces; this is temporary.
@@ -50,7 +50,7 @@ func RunLoop(
 					lifecycler,
 					updateFn,
 					getServiceClassFn,
-					getBrokerFn,
+					getServiceBrokerFn,
 					evt,
 				); err != nil {
 					// TODO: try the handler again.
@@ -62,7 +62,7 @@ func RunLoop(
 					ctx,
 					lifecycler,
 					getServiceClassFn,
-					getBrokerFn,
+					getServiceBrokerFn,
 					evt,
 				); err != nil {
 					// TODO: try the handler again.
@@ -79,7 +79,7 @@ func handleAddInstance(
 	lifecycler framework.Lifecycler,
 	updateFn UpdateInstanceFunc,
 	getServiceClassFn refs.ServiceClassGetterFunc,
-	getBrokerFn refs.BrokerGetterFunc,
+	getServiceBrokerFn refs.ServiceBrokerGetterFunc,
 	evt watch.Event,
 ) error {
 
@@ -99,11 +99,11 @@ func handleAddInstance(
 		logger.Errorf("couldn't find service class %s/%s", scNamespace, scName)
 		return err
 	}
-	b, err := getBrokerFn(sc.BrokerRef)
+	b, err := getServiceBrokerFn(sc.ServiceBrokerRef)
 	if err != nil {
-		brokerNamespace := sc.BrokerRef.Namespace
-		brokerName := sc.BrokerRef.Name
-		logger.Errorf("couldn't find broker %s/%s", brokerNamespace, brokerName)
+		serviceBrokerNamespace := sc.ServiceBrokerRef.Namespace
+		serviceBrokerName := sc.ServiceBrokerRef.Name
+		logger.Errorf("couldn't find service broker %s/%s", serviceBrokerNamespace, serviceBrokerName)
 		return err
 	}
 	req := &framework.ProvisionRequest{
@@ -135,7 +135,7 @@ func handleDeleteInstance(
 	ctx context.Context,
 	lifecycler framework.Lifecycler,
 	getServiceClassFn refs.ServiceClassGetterFunc,
-	getBrokerFn refs.BrokerGetterFunc,
+	getServiceBrokerFn refs.ServiceBrokerGetterFunc,
 	evt watch.Event,
 ) error {
 	instance, ok := evt.Object.(*data.Instance)
@@ -146,7 +146,7 @@ func handleDeleteInstance(
 	if err != nil {
 		return err
 	}
-	b, err := getBrokerFn(sc.BrokerRef)
+	b, err := getServiceBrokerFn(sc.ServiceBrokerRef)
 	if err != nil {
 		return err
 	}

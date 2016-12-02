@@ -9,7 +9,7 @@ type Cataloger interface {
 	// List lists all the available services.
 	List(
 		ctx context.Context,
-		brokerSpec BrokerSpec,
+		serviceBrokerSpec ServiceBrokerSpec,
 	) ([]*Service, error)
 }
 
@@ -18,7 +18,7 @@ type Provisioner interface {
 	// Provision provisions a service instance.
 	Provision(
 		ctx context.Context,
-		brokerSpec BrokerSpec,
+		serviceBrokerSpec ServiceBrokerSpec,
 		req *ProvisionRequest,
 	) (*ProvisionResponse, error)
 }
@@ -28,7 +28,7 @@ type Binder interface {
 	// Bind obtains valid credentials (and other connection details) for a service instance.
 	Bind(
 		ctx context.Context,
-		brokerSpec BrokerSpec,
+		serviceBrokerSpec ServiceBrokerSpec,
 		req *BindRequest,
 	) (*BindResponse, error)
 }
@@ -38,7 +38,7 @@ type Unbinder interface {
 	// Unbind invalidates the specified credentials.
 	Unbind(
 		ctx context.Context,
-		brokerSpec BrokerSpec,
+		serviceBrokerSpec ServiceBrokerSpec,
 		req *UnbindRequest,
 	) error
 }
@@ -48,7 +48,7 @@ type Deprovisioner interface {
 	// Deprovision deprovisions a service instance.
 	Deprovision(
 		ctx context.Context,
-		brokerSpec BrokerSpec,
+		serviceBrokerSpec ServiceBrokerSpec,
 		req *DeprovisionRequest,
 	) (*DeprovisionResponse, error)
 }
@@ -59,7 +59,7 @@ type OperationStatusRetriever interface {
 	// GetOperationStatus fetches the status of an asynchronous operation that is pending completion.
 	GetOperationStatus(
 		ctx context.Context,
-		brokerSpec BrokerSpec,
+		serviceBrokerSpec ServiceBrokerSpec,
 		req *OperationStatusRequest,
 	) (*OperationStatusResponse, error)
 }

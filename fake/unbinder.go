@@ -16,7 +16,7 @@ type Unbinder struct {
 // nil.
 func (u *Unbinder) Unbind(
 	ctx context.Context,
-	brokerSpec framework.BrokerSpec,
+	serviceBrokerSpec framework.ServiceBrokerSpec,
 	req *framework.UnbindRequest,
 ) error {
 	u.Reqs = append(u.Reqs, req)

@@ -18,7 +18,7 @@ var (
 	ErrWatchClosed = errors.New("watch closed")
 )
 
-// RunLoop starts a blocking control loop that watches and takes action on broker resources.
+// RunLoop starts a blocking control loop that watches and takes action on serviceBroker resources.
 //
 // TODO: remove the namespace param. See https://github.com/deis/steward-framework/issues/30
 func RunLoop(
@@ -28,7 +28,7 @@ func RunLoop(
 	secretWriter SecretWriterFunc,
 	fn WatchBindingFunc,
 	updateFn UpdateBindingFunc,
-	getBrokerFn refs.BrokerGetterFunc,
+	getSvcBrokerFn refs.ServiceBrokerGetterFunc,
 	getSvcClassFn refs.ServiceClassGetterFunc,
 	getInstanceFn refs.InstanceGetterFunc,
 ) error {
@@ -56,7 +56,7 @@ func RunLoop(
 					binder,
 					updateFn,
 					secretWriter,
-					getBrokerFn,
+					getSvcBrokerFn,
 					getSvcClassFn,
 					getInstanceFn,
 					evt,
@@ -74,7 +74,7 @@ func handleAddBinding(
 	binder framework.Binder,
 	updateFn UpdateBindingFunc,
 	secretWriter SecretWriterFunc,
-	getBrokerFn refs.BrokerGetterFunc,
+	getSvcBrokerFn refs.ServiceBrokerGetterFunc,
 	getSvcClassFn refs.ServiceClassGetterFunc,
 	getInstanceFn refs.InstanceGetterFunc,
 	evt watch.Event,
@@ -92,9 +92,9 @@ func handleAddBinding(
 		return err
 	}
 
-	broker, serviceClass, instance, err := refs.GetDependenciesForBinding(
+	serviceBroker, serviceClass, instance, err := refs.GetDependenciesForBinding(
 		binding,
-		getBrokerFn,
+		getSvcBrokerFn,
 		getSvcClassFn,
 		getInstanceFn,
 	)
@@ -111,7 +111,7 @@ func handleAddBinding(
 		Parameters: binding.Spec.Parameters,
 	}
 	logger.Debugf("issuing binding request %+v", *bindReq)
-	bindResp, err := binder.Bind(ctx, broker.Spec, bindReq)
+	bindResp, err := binder.Bind(ctx, serviceBroker.Spec, bindReq)
 	if err != nil {
 		logger.Errorf("calling bind operation (%s)", err)
 		return err
