@@ -8,13 +8,13 @@ import (
 	ext "k8s.io/client-go/pkg/apis/extensions/v1beta1"
 )
 
-var broker3PR = &ext.ThirdPartyResource{
+var serviceBroker3PR = &ext.ThirdPartyResource{
 	TypeMeta: unversioned.TypeMeta{
 		Kind:       "ThirdPartyResource",
 		APIVersion: "extensions/v1beta1",
 	},
 	ObjectMeta: v1.ObjectMeta{
-		Name: "broker.steward.deis.io",
+		Name: "service-broker.steward.deis.io",
 		Labels: map[string]string{
 			"heritage": "steward",
 		},
@@ -42,13 +42,13 @@ var serviceClass3PR = &ext.ThirdPartyResource{
 	},
 }
 
-var instance3PR = &ext.ThirdPartyResource{
+var serviceInstance3PR = &ext.ThirdPartyResource{
 	TypeMeta: unversioned.TypeMeta{
 		Kind:       "ThirdPartyResource",
 		APIVersion: "extensions/v1beta1",
 	},
 	ObjectMeta: v1.ObjectMeta{
-		Name: "instance.steward.deis.io",
+		Name: "service-instance.steward.deis.io",
 		Labels: map[string]string{
 			"heritage": "steward",
 		},
@@ -59,13 +59,13 @@ var instance3PR = &ext.ThirdPartyResource{
 	},
 }
 
-var binding3PR = &ext.ThirdPartyResource{
+var serviceBinding3PR = &ext.ThirdPartyResource{
 	TypeMeta: unversioned.TypeMeta{
 		Kind:       "ThirdPartyResource",
 		APIVersion: "extensions/v1beta1",
 	},
 	ObjectMeta: v1.ObjectMeta{
-		Name: "binding.steward.deis.io",
+		Name: "service-binding.steward.deis.io",
 		Labels: map[string]string{
 			"heritage": "steward",
 		},
@@ -79,8 +79,8 @@ var binding3PR = &ext.ThirdPartyResource{
 func Ensure3PRs(k8sClient *kubernetes.Clientset) error {
 	tprs := k8sClient.Extensions().ThirdPartyResources()
 
-	if _, err := tprs.Create(broker3PR); err != nil && !errors.IsAlreadyExists(err) {
-		logger.Errorf("error creating the broker third party resource (%s)", err)
+	if _, err := tprs.Create(serviceBroker3PR); err != nil && !errors.IsAlreadyExists(err) {
+		logger.Errorf("error creating the servicebroker third party resource (%s)", err)
 		return errCreatingThirdPartyResource{Original: err}
 	}
 
@@ -89,13 +89,13 @@ func Ensure3PRs(k8sClient *kubernetes.Clientset) error {
 		return errCreatingThirdPartyResource{Original: err}
 	}
 
-	if _, err := tprs.Create(instance3PR); err != nil && !errors.IsAlreadyExists(err) {
-		logger.Errorf("error creating the instance third party resource (%s)", err)
+	if _, err := tprs.Create(serviceInstance3PR); err != nil && !errors.IsAlreadyExists(err) {
+		logger.Errorf("error creating the service instance third party resource (%s)", err)
 		return errCreatingThirdPartyResource{Original: err}
 	}
 
-	if _, err := tprs.Create(binding3PR); err != nil && !errors.IsAlreadyExists(err) {
-		logger.Errorf("error creating the binding third party resource (%s)", err)
+	if _, err := tprs.Create(serviceBinding3PR); err != nil && !errors.IsAlreadyExists(err) {
+		logger.Errorf("error creating the service binding third party resource (%s)", err)
 		return errCreatingThirdPartyResource{Original: err}
 	}
 

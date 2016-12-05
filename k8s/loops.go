@@ -4,16 +4,17 @@ import (
 	"context"
 
 	"github.com/deis/steward-framework"
-	"github.com/deis/steward-framework/k8s/binding"
-	"github.com/deis/steward-framework/k8s/broker"
-	"github.com/deis/steward-framework/k8s/instance"
 	"github.com/deis/steward-framework/k8s/refs"
+	"github.com/deis/steward-framework/k8s/servicebinding"
+	"github.com/deis/steward-framework/k8s/servicebroker"
+	"github.com/deis/steward-framework/k8s/serviceinstance"
 	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/kubernetes"
 )
 
 // StartControlLoops is a convenience function that initiates all of Steward's individual control
-// loops, of which there is one per relevant resource type-- Broker, Instance, and Binding.
+// loops, of which there is one per relevant resource type-- ServiceBroker, ServiceInstance, and
+// ServiceBinding.
 //
 // In order to stop all loops, pass a cancellable context to this function and call its cancel
 // function.
@@ -27,66 +28,66 @@ func StartControlLoops(
 	errCh chan<- error,
 ) {
 
-	// Start broker loop
+	// Start service broker loop
 	go func() {
-		updateBrokerFn := broker.NewK8sUpdateBrokerFunc(dynamicCl)
-		watchBrokerFn := broker.NewK8sWatchBrokerFunc(dynamicCl)
-		createSvcClassFn := broker.NewK8sCreateServiceClassFunc(dynamicCl)
-		if err := broker.RunLoop(
+		updateServiceBrokerFn := servicebroker.NewK8sUpdateServiceBrokerFunc(dynamicCl)
+		watchServiceBrokerFn := servicebroker.NewK8sWatchServiceBrokerFunc(dynamicCl)
+		createSvcClassFn := servicebroker.NewK8sCreateServiceClassFunc(dynamicCl)
+		if err := servicebroker.RunLoop(
 			ctx,
 			globalNamespace,
-			watchBrokerFn,
-			updateBrokerFn,
+			watchServiceBrokerFn,
+			updateServiceBrokerFn,
 			cataloger,
 			createSvcClassFn,
 		); err != nil {
-			logger.Errorf("broker loop (%s)", err)
+			logger.Errorf("service broker loop (%s)", err)
 			errCh <- err
 		}
 	}()
 
-	// Start instance loop
+	// Start service instance loop
 	go func() {
-		if err := instance.RunLoop(
+		if err := serviceinstance.RunLoop(
 			ctx,
-			instance.NewK8sWatchInstanceFunc(dynamicCl),
-			instance.NewK8sUpdateInstanceFunc(dynamicCl),
+			serviceinstance.NewK8sWatchServiceInstanceFunc(dynamicCl),
+			serviceinstance.NewK8sUpdateServiceInstanceFunc(dynamicCl),
 			refs.NewK8sServiceClassGetterFunc(dynamicCl),
-			refs.NewK8sBrokerGetterFunc(dynamicCl),
+			refs.NewK8sServiceBrokerGetterFunc(dynamicCl),
 			lifecycler,
 		); err != nil {
-			logger.Errorf("instance loop (%s)", err)
+			logger.Errorf("service instance loop (%s)", err)
 			errCh <- err
 		}
 	}()
 
-	// start binding loop
+	// start service binding loop
 	go func() {
-		watchBindingFn := binding.NewK8sWatchBindingFunc(dynamicCl)
-		updateBindingFn := binding.NewK8sUpdateBindingFunc(dynamicCl)
+		watchServiceBindingFn := servicebinding.NewK8sWatchServiceBindingFunc(dynamicCl)
+		updateServiceBindingFn := servicebinding.NewK8sUpdateServiceBindingFunc(dynamicCl)
 
-		brokerGetterFn := refs.NewK8sBrokerGetterFunc(dynamicCl)
+		serviceBrokerGetterFn := refs.NewK8sServiceBrokerGetterFunc(dynamicCl)
 		svcClassGetterFn := refs.NewK8sServiceClassGetterFunc(dynamicCl)
-		instanceGetterFn := refs.NewK8sInstanceGetterFunc(dynamicCl)
+		svcInstanceGetterFn := refs.NewK8sServiceInstanceGetterFunc(dynamicCl)
 
 		// TODO: remove the hard-coded "default" namespace and instead watch all namespaces and be able
 		// to create secrets in any given namespace.
 		//
 		// See https://github.com/deis/steward-framework/issues/30 and
 		// https://github.com/deis/steward-framework/issues/29 for details on how to resolve
-		secretWriterFunc := binding.NewK8sSecretWriterFunc(k8sClient.Core().Secrets("default"))
-		if err := binding.RunLoop(
+		secretWriterFunc := servicebinding.NewK8sSecretWriterFunc(k8sClient.Core().Secrets("default"))
+		if err := servicebinding.RunLoop(
 			ctx,
 			"default",
 			lifecycler,
 			secretWriterFunc,
-			watchBindingFn,
-			updateBindingFn,
-			brokerGetterFn,
+			watchServiceBindingFn,
+			updateServiceBindingFn,
+			serviceBrokerGetterFn,
 			svcClassGetterFn,
-			instanceGetterFn,
+			svcInstanceGetterFn,
 		); err != nil {
-			logger.Errorf("binding loop (%s)", err)
+			logger.Errorf("service binding loop (%s)", err)
 			errCh <- err
 		}
 	}()

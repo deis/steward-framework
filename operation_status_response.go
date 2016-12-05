@@ -29,8 +29,9 @@ const (
 	// OperationStateInProgress is the OperationState indicating that the operation is still in
 	// progress.
 	OperationStateInProgress OperationState = "in progress"
-	// OperationStateGone is the OperationState indicating that the broker has deleted the service
-	// instance in question. In the case of async deprovisioning, this is an indicator of success.
+	// OperationStateGone is the OperationState indicating that the service broker has deleted the
+	// service instance in question. In the case of async deprovisioning, this is an indicator of
+	// success.
 	OperationStateGone OperationState = "gone"
 )
 

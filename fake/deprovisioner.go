@@ -18,7 +18,7 @@ type Deprovisioner struct {
 // DeprovisionRequest and returns a hardcoded DeprovisionResponse.
 func (d *Deprovisioner) Deprovision(
 	ctx context.Context,
-	brokerSpec framework.BrokerSpec,
+	serviceBrokerSpec framework.ServiceBrokerSpec,
 	req *framework.DeprovisionRequest,
 ) (*framework.DeprovisionResponse, error) {
 
