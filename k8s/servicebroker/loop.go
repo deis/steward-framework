@@ -35,8 +35,12 @@ func RunLoop(
 			return ErrCancelled
 		case evt, open := <-ch:
 			if !open {
-				logger.Errorf("service broker loop watch channel was closed")
-				return ErrWatchClosed
+				watcher, err = fn(namespace)
+				if err != nil {
+					logger.Errorf("service broker loop watch channel was closed")
+					return ErrWatchClosed
+				}
+				ch = watcher.ResultChan()
 			}
 			logger.Debugf("service broker loop received event")
 			switch evt.Type {

@@ -18,6 +18,7 @@ type OperationStatusRetriever struct {
 // OperationStatusRequest and returns a hardcoded OperationStatusResponse.
 func (o *OperationStatusRetriever) GetOperationStatus(
 	ctx context.Context,
+	brokerSpec framework.ServiceBrokerSpec,
 	req *framework.OperationStatusRequest,
 ) (*framework.OperationStatusResponse, error) {
 

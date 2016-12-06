@@ -46,7 +46,6 @@ func TestRunLoopCancel(t *testing.T) {
 
 func TestRunLoopSuccess(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
 	watcher, fakeWatcher := newFakeWatchServiceBrokerFunc(nil)
 	updater, updated := newFakeUpdateServiceBrokerFunc(nil)
 	cataloger := fakeCataloger()
@@ -60,18 +59,15 @@ func TestRunLoopSuccess(t *testing.T) {
 	serviceBroker := new(data.ServiceBroker)
 	serviceBroker.Kind = data.ServiceBrokerKind
 	fakeWatcher.Add(serviceBroker)
+
+	time.Sleep(100 * time.Millisecond)
+	cancel()
 	fakeWatcher.Stop()
 
-	const errTimeout = 100 * time.Millisecond
-	select {
-	case err := <-errCh:
-		assert.Equal(t, len(*createdSvcClasses), len(cataloger.Services), "number of created service classes")
-		assert.Equal(t, len(*updated), 2, "number of updated service brokers")
-		assert.Err(t, ErrWatchClosed, err)
-	case <-time.After(errTimeout):
-		t.Fatalf("RunLoop didn't return after %s", errTimeout)
-	}
-
+	err := <-errCh
+	assert.Equal(t, len(*createdSvcClasses), len(cataloger.Services), "number of created service classes")
+	assert.Equal(t, len(*updated), 2, "number of updated service brokers")
+	assert.Err(t, ErrCancelled, err)
 }
 
 func TestHandleAddServiceBrokerNotAServiceBroker(t *testing.T) {

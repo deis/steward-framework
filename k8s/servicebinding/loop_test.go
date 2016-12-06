@@ -40,9 +40,7 @@ func TestRunLoopCancel(t *testing.T) {
 }
 
 func TestRunLoopSuccess(t *testing.T) {
-
 	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
 	watcher, fakeWatcher := newFakeWatchServiceBindingFunc(nil)
 	secretWriter, writtenSecrets := newFakeSecretWriterFunc(nil)
 	updateServiceBindingFn, updatedServiceBindings := newFakeUpdateServiceBindingFunc(nil)
@@ -69,23 +67,22 @@ func TestRunLoopSuccess(t *testing.T) {
 			svcInstanceGetterFn,
 		)
 	}()
+
 	serviceBinding := new(data.ServiceBinding)
 	serviceBinding.Kind = data.ServiceBindingKind
 	fakeWatcher.Add(serviceBinding)
+
+	time.Sleep(100 * time.Millisecond)
+	cancel()
 	fakeWatcher.Stop()
 
-	const errTimeout = 100 * time.Millisecond
-	select {
-	case err := <-errCh:
-		assert.Equal(t, len(*writtenSecrets), 1, "number of written secrets")
-		writtenSecret := (*writtenSecrets)[0]
-		assert.Equal(t, len(writtenSecret.Data), len(binder.Res.Creds), "number of credentials in the secret")
-		assert.Equal(t, len(*updatedServiceBindings), 2, "number of updated service bindings")
-		assert.Equal(t, len(binder.Reqs), 1, "number of bind calls")
-		assert.Err(t, ErrWatchClosed, err)
-	case <-time.After(errTimeout):
-		t.Fatalf("RunLoop didn't return after %s", errTimeout)
-	}
+	err := <-errCh
+	assert.Equal(t, len(*writtenSecrets), 1, "number of written secrets")
+	writtenSecret := (*writtenSecrets)[0]
+	assert.Equal(t, len(writtenSecret.Data), len(binder.Res.Creds), "number of credentials in the secret")
+	assert.Equal(t, len(*updatedServiceBindings), 2, "number of updated service bindings")
+	assert.Equal(t, len(binder.Reqs), 1, "number of bind calls")
+	assert.Err(t, ErrCancelled, err)
 }
 
 func TestHandleAddServiceBindingNotAServiceBinding(t *testing.T) {
