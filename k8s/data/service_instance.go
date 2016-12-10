@@ -14,6 +14,7 @@ const (
 	ServiceInstanceStatePending     ServiceInstanceState = "Pending"
 	ServiceInstanceStateProvisioned ServiceInstanceState = "Provisioned"
 	ServiceInstanceStateFailed      ServiceInstanceState = "Failed"
+	ServiceInstanceStateUnknown     ServiceInstanceState = "Unkown"
 )
 
 // ServiceInstanceAPIResource returns an APIResource to describe the ServiceInstance third party resource
@@ -43,7 +44,8 @@ type ServiceInstanceSpec struct {
 }
 
 type ServiceInstanceStatus struct {
-	Status ServiceInstanceState `json:"status"`
+	Status       ServiceInstanceState `json:"status"`
+	StatusReason string               `json:"status_reason"`
 }
 
 type ServiceInstanceState string

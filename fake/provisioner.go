@@ -14,6 +14,15 @@ type Provisioner struct {
 	Err  error
 }
 
+// NewProvisioner returns a new fake framework.Provisioner
+func NewProvisioner() *Provisioner {
+	return &Provisioner{
+		Res: &framework.ProvisionResponse{
+			IsAsync: false,
+		},
+	}
+}
+
 // Provision is the Provisioner interface implementation. It just records the ProvisionRequest and
 // returns a hardcoded ProvisionResponse.
 func (p *Provisioner) Provision(

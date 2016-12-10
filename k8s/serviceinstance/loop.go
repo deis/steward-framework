@@ -3,6 +3,7 @@ package serviceinstance
 import (
 	"context"
 	"errors"
+	"time"
 
 	"github.com/deis/steward-framework"
 	"github.com/deis/steward-framework/k8s/data"
@@ -12,7 +13,7 @@ import (
 
 var (
 	ErrCancelled           = errors.New("stopped")
-	ErrNotAServiceInstance = errors.New("not an service instance")
+	ErrNotAServiceInstance = errors.New("not a service instance")
 	ErrWatchClosed         = errors.New("watch closed")
 )
 
@@ -40,8 +41,12 @@ func RunLoop(
 			return ErrCancelled
 		case evt, open := <-ch:
 			if !open {
-				logger.Errorf("service instance loop watch channel was closed")
-				return ErrWatchClosed
+				watcher, err = watchFn("default")
+				if err != nil {
+					logger.Errorf("service instance loop watch channel was closed")
+					return ErrWatchClosed
+				}
+				ch = watcher.ResultChan()
 			}
 			logger.Debugf("service instance loop received event")
 			switch evt.Type {
@@ -83,7 +88,6 @@ func handleAddServiceInstance(
 	getServiceBrokerFn refs.ServiceBrokerGetterFunc,
 	evt watch.Event,
 ) error {
-
 	serviceInstance := new(data.ServiceInstance)
 	if err := data.TranslateToTPR(evt.Object, serviceInstance, data.ServiceInstanceKind); err != nil {
 		return ErrNotAServiceInstance
@@ -111,24 +115,42 @@ func handleAddServiceInstance(
 		InstanceID:        serviceInstance.Spec.ID,
 		ServiceID:         sc.ID,
 		PlanID:            serviceInstance.Spec.PlanID,
-		AcceptsIncomplete: false,
+		AcceptsIncomplete: true,
 		Parameters:        serviceInstance.Spec.Parameters,
 	}
 	finalServiceInstanceState := data.ServiceInstanceStateFailed
+	finalServiceInstanceStateReason := ""
 	defer func() {
 		serviceInstance.Status.Status = finalServiceInstanceState
+		serviceInstance.Status.StatusReason = finalServiceInstanceStateReason
 		if _, err = updateFn(serviceInstance); err != nil {
 			logger.Errorf("failed to update service instance to final state %s (%s)", finalServiceInstanceState, err)
 		}
 	}()
 	logger.Debugf("issuing provisioning request %+v", *req)
-	_, err = lifecycler.Provision(ctx, b.Spec, req)
+	provisionResp, err := lifecycler.Provision(ctx, b.Spec, req)
 	if err != nil {
 		return err
 	}
-	// TODO: Wait for async provision completion.
-	// See https://github.com/deis/steward-framework/issues/39
-	finalServiceInstanceState = data.ServiceInstanceStateProvisioned
+	if provisionResp.IsAsync {
+		serviceInstance.Status.StatusReason = "Asynchronous provisioning in progress"
+		if serviceInstance, err = updateFn(serviceInstance); err != nil {
+			logger.Errorf("failed to update service instance (%s)", err)
+			// Don't return the error if one occurs here. Just because we couldn't set set the status
+			// reason here doesn't mean we shouldn't proceed with polling to attempt to resolve the final
+			// state... after all, provisioning is on-going at this point. We should be making a best
+			// effort to understand if it succeeds or not.
+		}
+		// TODO: Make this configurable
+		ctxWithTimeout, cancelFn := context.WithTimeout(ctx, time.Hour)
+		defer cancelFn()
+		finalServiceInstanceState, finalServiceInstanceStateReason, err = pollProvisionState(ctxWithTimeout, b.Spec, lifecycler, serviceInstance.Spec.ID, sc.ID, serviceInstance.Spec.PlanID)
+		if err != nil {
+			return err
+		}
+	} else {
+		finalServiceInstanceState = data.ServiceInstanceStateProvisioned
+	}
 	return nil
 }
 
@@ -139,8 +161,8 @@ func handleDeleteServiceInstance(
 	getServiceBrokerFn refs.ServiceBrokerGetterFunc,
 	evt watch.Event,
 ) error {
-	serviceInstance, ok := evt.Object.(*data.ServiceInstance)
-	if !ok {
+	serviceInstance := new(data.ServiceInstance)
+	if err := data.TranslateToTPR(evt.Object, serviceInstance, data.ServiceInstanceKind); err != nil {
 		return ErrNotAServiceInstance
 	}
 	sc, err := getServiceClassFn(serviceInstance.Spec.ServiceClassRef)
@@ -155,14 +177,21 @@ func handleDeleteServiceInstance(
 		InstanceID:        serviceInstance.Spec.ID,
 		ServiceID:         sc.ID,
 		PlanID:            serviceInstance.Spec.PlanID,
-		AcceptsIncomplete: false,
+		AcceptsIncomplete: true,
 		Parameters:        serviceInstance.Spec.Parameters,
 	}
-	_, err = lifecycler.Deprovision(ctx, b.Spec, req)
+	deprovisionResp, err := lifecycler.Deprovision(ctx, b.Spec, req)
 	if err != nil {
 		return err
 	}
-	// TODO: Wait for async deprovision completion
-	// See https://github.com/deis/steward-framework/issues/39
+	if deprovisionResp.IsAsync {
+		// TODO: Make this configurable
+		ctxWithTimeout, cancelFn := context.WithTimeout(ctx, time.Hour)
+		defer cancelFn()
+		err = pollDeprovisionState(ctxWithTimeout, b.Spec, lifecycler, serviceInstance.Spec.ID, sc.ID, serviceInstance.Spec.PlanID)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }

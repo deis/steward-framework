@@ -14,6 +14,15 @@ type Deprovisioner struct {
 	Err  error
 }
 
+// NewDeprovisioner returns a new fake framework.Provisioner
+func NewDeprovisioner() *Deprovisioner {
+	return &Deprovisioner{
+		Res: &framework.DeprovisionResponse{
+			IsAsync: false,
+		},
+	}
+}
+
 // Deprovision is the Deprovisioner interface implementation. It just records the
 // DeprovisionRequest and returns a hardcoded DeprovisionResponse.
 func (d *Deprovisioner) Deprovision(
