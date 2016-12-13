@@ -1,7 +1,7 @@
 SHORT_NAME := steward-framework
 
 REPO_PATH := github.com/deis/${SHORT_NAME}
-DEV_ENV_IMAGE := quay.io/deis/go-dev:0.19.0
+DEV_ENV_IMAGE := quay.io/deis/go-dev:v0.21.0
 DEV_ENV_WORK_DIR := /go/src/${REPO_PATH}
 K8S_CLAIMER_SUFFIX := -e K8S_CLAIMER_AUTH_TOKEN=${K8S_CLAIMER_AUTH_TOKEN}
 DEV_ENV_PREFIX := docker run -it --rm -v ${CURDIR}:${DEV_ENV_WORK_DIR} -w ${DEV_ENV_WORK_DIR}
